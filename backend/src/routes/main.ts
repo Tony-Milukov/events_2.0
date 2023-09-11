@@ -1,10 +1,9 @@
 const express = require("express")
 const router = express.Router()
 const userRouter = require ("./user.router.ts")
-
+const eventsRouter = require("./events.router.ts")
 router.use("/user", userRouter)
-router.get("/test", (req:any,res:any) => {
-    res.send("hello TEST")
-})
+router.use("/events", eventsRouter)
+
 module.exports = router
 export {}

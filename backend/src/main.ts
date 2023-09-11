@@ -7,20 +7,9 @@ const sequelize = require('./db.ts');
 const router = require('./routes/main.ts');
 const bodyParser = require("body-parser")
 const app = express();
-const session = require("express-session")
 
 app.use(bodyParser.json())
 app.use(cors());
-
-
-app.use(session({
-    secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        maxAge: 60000
-    }
-}));
 
 app.use('/api', router);
 

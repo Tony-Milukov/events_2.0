@@ -6,9 +6,8 @@ const loginController = async (req:any,res:any) => {
     try {
         const email = bodyValidator(req,res,"email")
         const password = bodyValidator(req,res,"password")
-        const user = await loginService(email, password)
-        req.session.auth = true
-        res.json({message: "successfully logged in"}).status(200)
+        const token = await loginService(email, password)
+        res.json({message: "successfully logged in", token}).status(200)
     } catch (e:any) {
         apiError(res, e.errorMsg)
         console.log(e)
