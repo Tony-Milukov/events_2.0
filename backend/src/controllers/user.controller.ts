@@ -4,9 +4,11 @@ const {loginService, registerService} = require("../services/user.service.ts")
 
 const loginController = async (req:any,res:any) => {
     try {
+        console.log(req.body)
         const email = bodyValidator(req,res,"email")
         const password = bodyValidator(req,res,"password")
         const token = await loginService(email, password)
+
         res.json({message: "successfully logged in", token}).status(200)
     } catch (e:any) {
         apiError(res, e.errorMsg)
