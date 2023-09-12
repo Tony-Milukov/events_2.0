@@ -3,9 +3,11 @@ const Sequelize = require('../db.ts');
 
 module.exports = Sequelize.define("event", {
     id: {
+        unique: true,
         primaryKey: true,
-        type: DataTypes.INTEGER,
-        allowNull: false
+        autoIncrement: true,
+        allowNull: false,
+        type: DataTypes.INTEGER
     },
     title: {
         type: DataTypes.STRING,
@@ -19,13 +21,19 @@ module.exports = Sequelize.define("event", {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    ownerId: {
-        type: DataTypes.INTEGER,
+    startLocation: {
+        type: DataTypes.STRING,
+        allowNull: true
+    }, endLocation: {
+        type: DataTypes.STRING,
         allowNull: false
+    }, links: {
+        type: DataTypes.JSON,
+        allowNull: true
     },
     image: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
 })
 export {}

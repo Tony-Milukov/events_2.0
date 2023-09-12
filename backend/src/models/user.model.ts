@@ -27,6 +27,7 @@ const User = Sequelize.define("user", {
         type: DataTypes.BOOLEAN,
         default: false
     }
+
 })
 module.exports = User
 export {}

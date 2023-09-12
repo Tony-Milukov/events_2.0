@@ -1,13 +1,16 @@
-const jwt = require("jsonwebtoken")
-
+const {getUserByToken} = require("../services/user.service.ts")
+const apiError = require("../utilits/apiError.ts")
 require('dotenv')
-    .config({ path: '../.env' });
-const isAuthMiddleware = (req:any,res:any, next:any) =>{
-    const token = req.token
-    if(token && jwt.verify(token, process.env.SECRET)) {
+    .config({path: '../.env'});
+
+const isAuthMiddleware = async (req: any, res: any, next: any) => {
+    try {
+        req.user = await getUserByToken(req, res)
+
         next()
-    } else {
-            res.json({message: "you are not logged in!"}).status(401)
+    } catch (e:any) {
+        console.log(e)
+        apiError(res, e.errorMsg, e.status)
     }
 }
 module.exports = isAuthMiddleware;
