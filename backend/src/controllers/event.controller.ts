@@ -10,7 +10,12 @@ const createEventController = async (req: any, res: any) => {
         // are allowed to be null
         const links = req.body.links as JSON | null
         const startLocation = req.body.startLocation
-
+        console.log({
+            title,
+            links,
+            price,
+            endLocation
+        })
         const user = req.user
         const event = await createEventService(title, description, price, user, endLocation, startLocation, links);
         res.json({message: "Event was created successfully!", eventId: event.id}).status(200)
