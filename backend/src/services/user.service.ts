@@ -24,24 +24,19 @@ const loginService = async (email: string, password: string) => {
      if(user) {
          throw {errorMsg: "user with that email address is already registered",status:409}
      }
-      await bcrypt.hash(password,9, async (err:any,hash:any) => {
-         //if there is an error, return an err message
-         if(err) {
-             throw {errorMsg: "something went wrong on hashing a password"}
-         }
-         const user = await User.create({
-             email,
-             password: hash,
-             username: `user_${v4()}`
+    const hash =  await bcrypt.hash(password,9)
+     const newUser = await User.create({
+         email,
+         password: hash,
+         username: `user_${v4()}`
 
-         })
-         //if user is not, he is not created, throw error
-         if (!user) {
-             throw {errorMsg: "something went wrong on creating a user", status: 400}
-         }
      })
+     //if user is not, he is not created, throw error
+     if (!newUser) {
+         throw {errorMsg: "something went wrong on creating a user", status: 400}
+     }
+
      //generate jwt
-     const newUser = User.findOne({where: {email}})
      return jwt.sign({userId: newUser.id, username: newUser.username}, process.env.SECRET)
 
  }
