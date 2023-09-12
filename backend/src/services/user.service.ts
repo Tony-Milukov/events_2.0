@@ -38,7 +38,7 @@ const loginService = async (email: string, password: string) => {
          //if user is not, he is not created, throw error
          if (!user) {
              throw {errorMsg: "something went wrong on creating a user", status: 400}
-         } return user
+         } return jwt.sign({userId: user.id, username: user.username}, process.env.SECRET)
      })
  }
 
