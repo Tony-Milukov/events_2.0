@@ -11,16 +11,29 @@ const createEventService = async (title: string, description: string, price: num
         userId: user.id
     })
     if (!event) {
-        throw {}
+        throw {errorMsg: "something went wrong on creating an event", status: 400}
     }
     return event
 }
 const getEventByIdService = async (eventId: string) => {
-    const event = await Event.findByPk(eventId);
+    const event = (await Event.findOne({
+        where: {
+            id: eventId
+        },
+        include: User
+    })).dataValues;
+
+    //getting owner data
+     const eventOwner = (await User.findByPk(event.userId)).dataValues
+
+
+    // deleting the personal information from the object, that will be send to user
+     delete eventOwner.password
+
     if (!event) {
         throw {errorMsg: "event with that eventId was not defined", status: 404}
     } else {
-        return event
+        return {...event, eventOwner}
     }
 }
 
@@ -31,9 +44,19 @@ const deleteEventByIdService = async (eventId:string) => {
         }
     })
 }
+const getAllEventsService = async (limit:number, offset:number) => {
+        const events = Event.findAndCountAll({
+            limit,
+            offset
+        })
+    if(!events) {
+        throw {errorMsg: "something went wrong on getting all events", status: 400}
+    } return events
+}
 module.exports = {
     createEventService,
     getEventByIdService,
-    deleteEventByIdService
+    deleteEventByIdService,
+    getAllEventsService
 }
 export {}

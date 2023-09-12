@@ -1,6 +1,6 @@
 const apiError = require("../utilits/apiError.ts")
 const {bodyValidator, paramValidator} = require("../utilits/validators/request.validator.ts");
-const {createEventService, getEventByIdService, deleteEventByIdService} = require("../services/event.service.ts");
+const {createEventService, getEventByIdService, deleteEventByIdService, getAllEventsService} = require("../services/event.service.ts");
 const createEventController = async (req: any, res: any) => {
     try {
         const title = bodyValidator(req, res, "title")
@@ -50,10 +50,24 @@ const deleteEventByIdController = async (req: any, res: any) => {
         apiError(res, e.errorMsg, e.status)
     }
 }
+
+const getAllEventsController = async (req: any, res: any) => {
+    try {
+        const pageSize = bodyValidator(req, res, 'pageSize');
+        const page = bodyValidator(req, res, 'page');
+        const offset = pageSize * (page === 1 ? 0 : page - 1);
+        const events = await getAllEventsService(pageSize, offset);
+        res.json(events).status(200)
+    } catch (e: any) {
+        apiError(res, e.errorMsg, e.status)
+    }
+}
+
 module.exports = {
     createEventController,
     deleteEventByIdController,
-    getEventByIdController
+    getEventByIdController,
+    getAllEventsController
 }
 
 export {}
