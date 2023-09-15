@@ -6,10 +6,9 @@ require('dotenv')
 const isAuthMiddleware = async (req: any, res: any, next: any) => {
     try {
         req.user = await getUserByToken(req, res)
-
         next()
     } catch (e:any) {
-        console.log(e)
+
         apiError(res, e.errorMsg, e.status)
     }
 }

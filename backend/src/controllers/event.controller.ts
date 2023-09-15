@@ -1,6 +1,14 @@
 const apiError = require("../utilits/apiError.ts")
 const {bodyValidator, paramValidator} = require("../utilits/validators/request.validator.ts");
-const {createEventService, getEventByIdService, deleteEventByIdService, getAllEventsService} = require("../services/event.service.ts");
+const {
+    createEventService,
+    getEventByIdService,
+    deleteEventByIdService,
+    getAllEventsService,
+    addUserToEventService,
+    getEventMembersService,
+    getUserEventsService
+} = require("../services/event.service.ts");
 const createEventController = async (req: any, res: any) => {
     try {
         const title = bodyValidator(req, res, "title")
@@ -35,6 +43,7 @@ const getEventByIdController = async (req: any, res: any) => {
 const deleteEventByIdController = async (req: any, res: any) => {
     try {
         const eventId = bodyValidator(req, res, "eventId");
+
         //getting that event
         const event = await getEventByIdService(eventId)
 
@@ -42,7 +51,9 @@ const deleteEventByIdController = async (req: any, res: any) => {
         if (event.userId === req.user.id) {
             await deleteEventByIdService(eventId)
             res.status(200).json({message: `Event ${eventId} was successfully deleted`})
-        } // if there is no permission
+        }
+
+        // if there is no permission
         else {
             res.status(403).json({message: "you have no permission to do it"})
         }
@@ -63,11 +74,46 @@ const getAllEventsController = async (req: any, res: any) => {
     }
 }
 
+const addUserToEventController = async (req: any, res: any) => {
+    try {
+        const eventId = bodyValidator(req, res, "eventId")
+
+        //getting user
+        const user = req.user
+        await addUserToEventService(user, eventId)
+        res.json({message: `User with the userId: @${user.id} was added as member to the event @${eventId}`}).status(200)
+    } catch (e: any) {
+        apiError(res, e.errorMsg, e.status)
+    }
+}
+const getEventMembersController = async (req: any, res: any) => {
+    try {
+        const eventId = bodyValidator(req, res, "eventId")
+        const eventMembers = await getEventMembersService(eventId);
+        res.json({eventMembers}).status(200)
+    } catch (e: any) {
+        apiError(res, e.errorMsg, e.status)
+    }
+
+}
+const getUserEventsController = async (req: any, res: any) => {
+    try {
+        const user = req.user
+        const userEvents = await getUserEventsService(user);
+        res.json({userEvents}).status(200)
+    } catch (e: any) {
+        apiError(res, e.errorMsg, e.status)
+    }
+
+}
 module.exports = {
     createEventController,
     deleteEventByIdController,
     getEventByIdController,
-    getAllEventsController
+    getAllEventsController,
+    addUserToEventController,
+    getUserEventsController,
+    getEventMembersController
 }
 
 export {}
