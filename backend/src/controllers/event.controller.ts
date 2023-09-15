@@ -7,7 +7,8 @@ const {
     getAllEventsService,
     addUserToEventService,
     getEventMembersService,
-    getUserEventsService
+    getUserEventsService,
+    getJoinedEventsService
 } = require("../services/event.service.ts");
 const createEventController = async (req: any, res: any) => {
     try {
@@ -99,12 +100,20 @@ const getEventMembersController = async (req: any, res: any) => {
 const getUserEventsController = async (req: any, res: any) => {
     try {
         const user = req.user
-        const userEvents = await getUserEventsService(user);
-        res.json({userEvents}).status(200)
+        const events = await getUserEventsService(user);
+        res.json({events}).status(200)
     } catch (e: any) {
         apiError(res, e.errorMsg, e.status)
     }
-
+}
+const getUserJoinedEventsController = async (req: any, res: any) => {
+    try {
+        const user = req.user
+        const events = await getJoinedEventsService(user);
+        res.json({events}).status(200)
+    } catch (e: any) {
+        apiError(res, e.errorMsg, e.status)
+    }
 }
 module.exports = {
     createEventController,
@@ -113,7 +122,8 @@ module.exports = {
     getAllEventsController,
     addUserToEventController,
     getUserEventsController,
-    getEventMembersController
+    getEventMembersController,
+    getUserJoinedEventsController
 }
 
 export {}

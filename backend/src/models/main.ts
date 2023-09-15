@@ -1,14 +1,15 @@
 const User = require("./user.model.ts")
 const Event = require("./event.model.ts")
-
-Event.belongsToMany(User, {through: "eventMembers"})
+const EventMember = require("./eventMember.model")
+Event.belongsToMany(User, {through: EventMember})
 
 Event.belongsTo(User)
 User.hasMany(Event)
 
 module.exports = {
     User,
-    Event
+    Event,
+    EventMember
 };
 
 

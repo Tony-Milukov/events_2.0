@@ -1,4 +1,4 @@
-const {User, Event} = require("../models/main.ts")
+const {User, Event, EventMember} = require("../models/main.ts")
 
 const createEventService = async (title: string, description: string, price: number, user: any, endLocation: string, startLocation: string | null, links: JSON | null) => {
     const event = await Event.create({
@@ -67,10 +67,19 @@ const getEventMembersService = async (eventId: any) => {
     if (!event) {
         throw {errorMsg: "event with that eventId was not defined", status: 404}
     }
+
     return await event.getUsers()
 }
 const getUserEventsService = async (user: any) => {
     return await user.getEvents()
+}
+const getJoinedEventsService = async (user: any) => {
+  const events = await  EventMember.findAndCountAll({
+        where: {
+            userId: user.id
+        }
+    })
+    return events ?? []
 }
 module.exports = {
     createEventService,
@@ -79,6 +88,11 @@ module.exports = {
     getAllEventsService,
     addUserToEventService,
     getEventMembersService,
-    getUserEventsService
+    getUserEventsService,
+    getJoinedEventsService
 }
 export {}
+
+
+
+

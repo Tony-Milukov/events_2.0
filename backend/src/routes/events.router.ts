@@ -8,15 +8,34 @@ const {
     getAllEventsController,
     addUserToEventController,
     getEventMembersController,
-    getUserEventsController
+    getUserEventsController,
+    getUserJoinedEventsController
 } = require("../controllers/event.controller.ts")
 
+
+//create event
 router.put("/create", isAuth, createEventController)
+
+//getEvent by eventId
 router.get("/getById/:eventId", getEventByIdController)
+
+//delete event by eventId
+//* you can delete only your own events
 router.post("/delete", isAuth, deleteEventByIdController)
+
+//getAll events, with pagination
 router.post("/getAll", getAllEventsController)
-router.post("/getAll", getAllEventsController)
-router.post("/getUserEvents", isAuth, getUserEventsController)
-router.post("/getEventMembers", isAuth, getEventMembersController)
+
+//get all user created events
+router.post("/getUser", isAuth, getUserEventsController)
+
+//get all members of that event by eventId
+router.post("/getMembers", isAuth, getEventMembersController)
+
+// adds user from the token, to the event by eventId
+router.post("/addMember", isAuth, addUserToEventController)
+
+// shows all joined events
+router.post("/getJoined", isAuth, getUserJoinedEventsController)
 module.exports = router
 export {}
