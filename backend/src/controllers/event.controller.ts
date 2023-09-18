@@ -101,7 +101,7 @@ const getUserEventsController = async (req: any, res: any) => {
     try {
         const user = req.user
         const events = await getUserEventsService(user);
-        res.json({events}).status(200)
+        res.json(events).status(200)
     } catch (e: any) {
         apiError(res, e.errorMsg, e.status)
     }

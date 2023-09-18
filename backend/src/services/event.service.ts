@@ -1,3 +1,5 @@
+import {Sequelize} from "sequelize";
+
 const {User, Event, EventMember} = require("../models/main.ts")
 
 const createEventService = async (title: string, description: string, price: number, user: any, endLocation: string, startLocation: string | null, links: JSON | null) => {
@@ -71,7 +73,11 @@ const getEventMembersService = async (eventId: any) => {
     return await event.getUsers()
 }
 const getUserEventsService = async (user: any) => {
-    return await user.getEvents()
+    return await Event.findAndCountAll({
+        where: {
+            userId: user.id
+        }
+    })
 }
 const getJoinedEventsService = async (user: any) => {
   const events = await user.getEvents()
