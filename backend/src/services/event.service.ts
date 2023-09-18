@@ -74,11 +74,7 @@ const getUserEventsService = async (user: any) => {
     return await user.getEvents()
 }
 const getJoinedEventsService = async (user: any) => {
-  const events = await  EventMember.findAndCountAll({
-        where: {
-            userId: user.id
-        }
-    })
+  const events = await user.getEvents()
     return events ?? []
 }
 module.exports = {
