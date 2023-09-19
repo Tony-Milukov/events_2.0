@@ -38,8 +38,9 @@ const getEventByIdController = async (req: any, res: any) => {
     try {
         const eventId = paramValidator(req, res, "eventId");
         const event = await getEventByIdService(eventId)
-        res.json(event).status(200)
+        res.json({event}).status(200)
     } catch (e: any) {
+        console.log(e)
         apiError(res, e.errorMsg, e.status)
     }
 }

@@ -1,5 +1,7 @@
 import {UserInterface} from "../interfaces/user.interface";
+import {RatingInterface} from "../interfaces/rating.interface";
 
+const sequelize = require("sequelize")
 const {User, UserRating} = require("../models/main.ts")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
@@ -32,7 +34,6 @@ const registerService = async (email: string, password: string) => {
         email,
         password: hash,
         username: `user_${v4()}`
-
     })
     //if user is not, he is not created, throw error
     if (!newUser) {
@@ -63,10 +64,10 @@ const decodeJwtService = async (token: string) =>
             return decoded;
         },
     );
-const getUserById = async (userId: number) => {
+const getUserByIdService = async (userId: number) => {
     const user = await User.findByPk(userId);
     if (!user) {
-        throw { errorMsg: "Sorry, user with that userId was not defined", status: 404}
+        throw {errorMsg: "Sorry, user with that userId was not defined", status: 404}
     }
 }
 const getUserByToken = async (req: any) => {
@@ -79,14 +80,44 @@ const getUserByToken = async (req: any) => {
 
     return user;
 };
-const rateUserService = async (rating: number, user: UserInterface, userId:any) => {
+const rateUserService = async (rating: number, user: UserInterface, userId: any) => {
+    //check did user already rated this user
+    const Rate = await UserRating.findAll({
+        where: {
+            userId: userId,
+            userRatedId: user.id
+        }
+    })
+
+    if (Rate[0]) {
+        return await Rate[0].update({
+            rating
+        })
+    }
     await UserRating.create({
         rating,
         userRatedId: user.id,
         userId
     })
 }
-
+const getUserRatingService = async (userId: number) => {
+    const rating = await UserRating.findOne({
+        where: {
+            userId
+        },
+        attributes: [
+            [sequelize.fn('AVG', sequelize.col('rating')), 'averageRating'],
+            [sequelize.fn('COUNT', sequelize.col('*')), 'count']
+        ]
+    });
+    if (rating) {
+        return {
+            rating: Math.round(rating.dataValues.averageRating),
+            ratingsCount: Math.round(rating.dataValues.count),
+        }
+    }
+    throw {errorMsg: "something went wrong on getting user rating", status: 200}
+}
 module.exports = {
     loginService,
     registerService,
@@ -94,6 +125,7 @@ module.exports = {
     decodeJwtService,
     getUserByToken,
     rateUserService,
-    getUserById
+    getUserByIdService,
+    getUserRatingService
 }
 export {}

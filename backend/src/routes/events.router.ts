@@ -33,7 +33,7 @@ router.post("/getUser", isAuth, getUserEventsController)
 router.post("/getMembers", isAuth, getEventMembersController)
 
 // adds user from the token, to the event by eventId
-router.post("/addMember", isAuth, addUserToEventController)
+router.put("/addMember", isAuth, addUserToEventController)
 
 // shows all joined events
 router.post("/getJoined", isAuth, getUserJoinedEventsController)

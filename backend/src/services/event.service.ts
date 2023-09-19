@@ -1,6 +1,5 @@
-import {Sequelize} from "sequelize";
-
-const {User, Event, EventMember} = require("../models/main.ts")
+const sequelize = require("../db.ts")
+const {User, Event, EventMember, UserRating} = require("../models/main.ts")
 
 const createEventService = async (title: string, description: string, price: number, user: any, endLocation: string, startLocation: string | null, links: JSON | null) => {
     const event = await Event.create({
@@ -22,7 +21,7 @@ const getEventByIdService = async (eventId: string) => {
         where: {
             id: eventId
         },
-        include: User
+        include: [User, {model: User, through:  EventMember}]
     })
     if (!event) {
         throw {errorMsg: "event with that eventId was not defined", status: 404}
@@ -49,7 +48,12 @@ const deleteEventByIdService = async (eventId: string) => {
 const getAllEventsService = async (limit: number, offset: number) => {
     const events = Event.findAndCountAll({
         limit,
-        offset
+        offset,
+        include: {
+            // get user and his rating
+            User, attributes: [[sequelize.fn('AVG', sequelize.col('rating')), 'averageRating'],
+                [sequelize.fn('COUNT', sequelize.col('*')), 'count']]
+        }
     })
     if (!events) {
         throw {errorMsg: "something went wrong on getting all events", status: 400}
@@ -80,7 +84,7 @@ const getUserEventsService = async (user: any) => {
     })
 }
 const getJoinedEventsService = async (user: any) => {
-  const events = await user.getEvents()
+    const events = await user.getEvents()
     return events ?? []
 }
 module.exports = {
