@@ -1,4 +1,6 @@
-const {User} = require("../models/main.ts")
+import {UserInterface} from "../interfaces/user.interface";
+
+const {User, UserRating} = require("../models/main.ts")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const v4 = require("uuid").v4
@@ -61,24 +63,37 @@ const decodeJwtService = async (token: string) =>
             return decoded;
         },
     );
-
-const getUserByToken = async (req:any) => {
+const getUserById = async (userId: number) => {
+    const user = await User.findByPk(userId);
+    if (!user) {
+        throw { errorMsg: "Sorry, user with that userId was not defined", status: 404}
+    }
+}
+const getUserByToken = async (req: any) => {
     const token = getTokenService(req);
     const decoded = await decodeJwtService(token);
     const user = await User.findByPk(decoded.userId);
     if (!token || !decoded || !user) {
-        throw { errorMsg: 'Unauthorized!', status: 401 };
+        throw {errorMsg: 'Unauthorized!', status: 401};
     }
 
     return user;
 };
-
+const rateUserService = async (rating: number, user: UserInterface, userId:any) => {
+    await UserRating.create({
+        rating,
+        userRatedId: user.id,
+        userId
+    })
+}
 
 module.exports = {
     loginService,
     registerService,
     getTokenService,
     decodeJwtService,
-    getUserByToken
+    getUserByToken,
+    rateUserService,
+    getUserById
 }
 export {}

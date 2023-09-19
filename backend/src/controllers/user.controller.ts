@@ -1,10 +1,11 @@
+import {UserInterface} from "../interfaces/user.interface";
+
 const apiError = require("../utilits/apiError.ts")
 const {bodyValidator} = require("../utilits/validators/request.validator.ts")
-const {loginService, registerService} = require("../services/user.service.ts")
+const {loginService, registerService, rateUserService,getUserById} = require("../services/user.service.ts")
 
 const loginController = async (req: any, res: any) => {
     try {
-        console.log(req.body)
         const email = bodyValidator(req, res, "email")
         const password = bodyValidator(req, res, "password")
         const token = await loginService(email, password)
@@ -24,8 +25,27 @@ const registerController = async (req: any, res: any) => {
         apiError(res, e.errorMsg, e.status)
     }
 }
+const rateUserController = async (req: any, res: any) => {
+    try {
+        const rating = bodyValidator(req, res, "rating") as number
+        const userId = bodyValidator(req, res, "userId") as number
+        const user = req.user as UserInterface
+
+        //check if userId is valid
+        await getUserById(userId)
+
+        //check if int is in range of 1-5
+        rating > 5 || rating < 1 ?  res.json({errorMsg: "rating must be an integer between 1-5"}) : null
+        await rateUserService(rating, user, userId)
+
+        res.json({message: `successfully rated user with userId: ${userId}, rated with: ${rating}`}).status(200)
+    } catch (e: any) {
+        apiError(res, e.errorMsg, e.status)
+    }
+}
 module.exports = {
     loginController,
-    registerController
+    registerController,
+    rateUserController
 }
 export {}

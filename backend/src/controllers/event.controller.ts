@@ -1,3 +1,5 @@
+import {UserInterface} from "../interfaces/user.interface";
+
 const apiError = require("../utilits/apiError.ts")
 const {bodyValidator, paramValidator} = require("../utilits/validators/request.validator.ts");
 const {
@@ -17,8 +19,8 @@ const createEventController = async (req: any, res: any) => {
         const price = bodyValidator(req, res, "price")
         const endLocation = bodyValidator(req, res, "endLocation")
         // are allowed to be null
-        const links = req.body.links as JSON | null
-        const startLocation = req.body.startLocation
+        const links = req.body.links || [] as JSON | null | []
+        const startLocation = req.body.startLocation || ""
         console.log({
             title,
             links,
@@ -99,7 +101,8 @@ const getEventMembersController = async (req: any, res: any) => {
 }
 const getUserEventsController = async (req: any, res: any) => {
     try {
-        const user = req.user
+        const user = req.user as UserInterface
+        console.log(user.id)
         const events = await getUserEventsService(user);
         res.json(events).status(200)
     } catch (e: any) {
