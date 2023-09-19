@@ -42,3 +42,4 @@ module.exports = {
     createRoleController,
     deleteRoleController
 }
+export {}
