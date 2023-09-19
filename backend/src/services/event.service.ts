@@ -51,12 +51,7 @@ const deleteEventByIdService = async (eventId: string) => {
 const getAllEventsService = async (limit: number, offset: number) => {
     const events = Event.findAndCountAll({
         limit,
-        offset,
-        include: {
-            // get user and his rating
-            User, attributes: [[sequelize.fn('AVG', sequelize.col('rating')), 'averageRating'],
-                [sequelize.fn('COUNT', sequelize.col('*')), 'count']]
-        }
+        offset
     })
     if (!events) {
         throw {errorMsg: "something went wrong on getting all events", status: 400}
