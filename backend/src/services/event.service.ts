@@ -1,6 +1,8 @@
+import {EventInterface} from "../interfaces/event.interface";
+
 const sequelize = require("../db.ts")
-const {User, Event, EventMember} = require("../models/main.ts")
-const {getUserRatingService} = require("./user.service.ts")
+const { User, Event, EventMember } = require("../models/main.ts")
+const { getUserByIdService } = require("./user.service.ts")
 
 const createEventService = async (title: string, description: string, price: number, user: any, endLocation: string, startLocation: string | null, links: JSON | null) => {
     const event = await Event.create({
@@ -29,16 +31,11 @@ const getEventByIdService = async (eventId: string) => {
     if (!event) {
         throw {errorMsg: "event with that eventId was not defined", status: 404}
     } else {
-        event = event.dataValues
+        event = event.dataValues as EventInterface
 
         //getting owner data
-        const eventCreator = (await User.findByPk(event.userId)).dataValues
-
-        const creatorRating = await getUserRatingService(eventCreator.id)
-
-        // deleting the personal information from the object, that will be send to user
-        delete eventCreator.password
-        return {...event, eventCreator, creatorRating}
+        const eventCreator =  await getUserByIdService(event.userId)
+        return {...event, eventCreator}
     }
 
 }
