@@ -64,11 +64,33 @@ const decodeJwtService = async (token: string) =>
             return decoded;
         },
     );
+
+const getUserRatingService = async (userId: number) => {
+    const rating = await UserRating.findOne({
+        where: {
+            userId
+        },
+        attributes: [
+            [sequelize.fn('AVG', sequelize.col('rating')), 'averageRating'],
+            [sequelize.fn('COUNT', sequelize.col('*')), 'count']
+        ]
+    });
+    if (rating) {
+        return {
+            rating: Math.round(rating.dataValues.averageRating),
+            ratingsCount: Math.round(rating.dataValues.count),
+        }
+    }
+    throw {errorMsg: "something went wrong on getting user rating", status: 200}
+}
 const getUserByIdService = async (userId: number) => {
     const user = await User.findByPk(userId);
+    const userRating = await getUserRatingService(userId)
     if (!user) {
         throw {errorMsg: "Sorry, user with that userId was not defined", status: 404}
     }
+    delete user.dataValues.password
+    return {...user.dataValues, userRating}
 }
 const getUserByToken = async (req: any) => {
     const token = getTokenService(req);
@@ -81,6 +103,7 @@ const getUserByToken = async (req: any) => {
     return user;
 };
 const rateUserService = async (rating: number, user: UserInterface, userId: any) => {
+
     //check did user already rated this user
     const Rate = await UserRating.findAll({
         where: {
@@ -100,24 +123,7 @@ const rateUserService = async (rating: number, user: UserInterface, userId: any)
         userId
     })
 }
-const getUserRatingService = async (userId: number) => {
-    const rating = await UserRating.findOne({
-        where: {
-            userId
-        },
-        attributes: [
-            [sequelize.fn('AVG', sequelize.col('rating')), 'averageRating'],
-            [sequelize.fn('COUNT', sequelize.col('*')), 'count']
-        ]
-    });
-    if (rating) {
-        return {
-            rating: Math.round(rating.dataValues.averageRating),
-            ratingsCount: Math.round(rating.dataValues.count),
-        }
-    }
-    throw {errorMsg: "something went wrong on getting user rating", status: 200}
-}
+
 module.exports = {
     loginService,
     registerService,

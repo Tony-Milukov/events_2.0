@@ -57,10 +57,24 @@ const getUserRatingController = async (req: any, res: any) => {
         apiError(res, e.errorMsg, e.status)
     }
 }
+const getUserByIdController = async (req: any, res: any) => {
+    try {
+        const userId = paramValidator(req, res, "userId")
+
+        //proof does this user exist
+        const user  =  await getUserByIdService(userId) as JSON
+
+        res.json(user).status(200)
+    } catch (e: any) {
+        console.log(e)
+        apiError(res, e.errorMsg, e.status)
+    }
+}
 module.exports = {
     loginController,
     registerController,
     rateUserController,
-    getUserRatingController
+    getUserRatingController,
+    getUserByIdController
 }
 export {}

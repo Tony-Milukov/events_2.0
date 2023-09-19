@@ -1,5 +1,6 @@
 const sequelize = require("../db.ts")
-const {User, Event, EventMember, UserRating} = require("../models/main.ts")
+const {User, Event, EventMember} = require("../models/main.ts")
+const {getUserRatingService} = require("./user.service.ts")
 
 const createEventService = async (title: string, description: string, price: number, user: any, endLocation: string, startLocation: string | null, links: JSON | null) => {
     const event = await Event.create({
@@ -21,18 +22,23 @@ const getEventByIdService = async (eventId: string) => {
         where: {
             id: eventId
         },
-        include: [User, {model: User, through:  EventMember}]
+        //getting data about eventMembers
+        include: [{model: User, through: EventMember}]
     })
+
     if (!event) {
         throw {errorMsg: "event with that eventId was not defined", status: 404}
     } else {
         event = event.dataValues
+
         //getting owner data
-        const eventOwner = (await User.findByPk(event.userId)).dataValues
+        const eventCreator = (await User.findByPk(event.userId)).dataValues
+
+        const creatorRating = await getUserRatingService(eventCreator.id)
 
         // deleting the personal information from the object, that will be send to user
-        delete eventOwner.password
-        return {...event, eventOwner}
+        delete eventCreator.password
+        return {...event, eventCreator, creatorRating}
     }
 
 }
