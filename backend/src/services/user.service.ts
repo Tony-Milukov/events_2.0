@@ -1,8 +1,7 @@
 import {UserInterface} from "../interfaces/user.interface";
-import {RatingInterface} from "../interfaces/rating.interface";
 
 const sequelize = require("sequelize")
-const {User, UserRating} = require("../models/main.ts")
+const {User, UserRating, Role} = require("../models/main.ts")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const v4 = require("uuid").v4
@@ -83,15 +82,18 @@ const getUserRatingService = async (userId: number) => {
     }
     throw {errorMsg: "something went wrong on getting user rating", status: 200}
 }
+
 const getUserByIdService = async (userId: number) => {
     const user = await User.findByPk(userId);
     const userRating = await getUserRatingService(userId)
     if (!user) {
         throw {errorMsg: "Sorry, user with that userId was not defined", status: 404}
     }
+    const userRoles = await user.getRoles()
     delete user.dataValues.password
-    return {...user.dataValues, userRating}
+    return {...user.dataValues, userRating, roles: userRoles}
 }
+
 const getUserByToken = async (req: any) => {
     const token = getTokenService(req);
     const decoded = await decodeJwtService(token);
@@ -124,6 +126,8 @@ const rateUserService = async (rating: number, user: UserInterface, userId: any)
     })
 }
 
+
+
 module.exports = {
     loginService,
     registerService,
@@ -132,6 +136,6 @@ module.exports = {
     getUserByToken,
     rateUserService,
     getUserByIdService,
-    getUserRatingService
+    getUserRatingService,
 }
 export {}

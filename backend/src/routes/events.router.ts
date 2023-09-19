@@ -1,6 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const isAuth = require("../middlewares/isAuth.middleware.ts")
+const checkRole = require("../middlewares/checkRole.middleware.ts")
 const {
     createEventController,
     getEventByIdController,
@@ -27,7 +28,7 @@ router.post("/delete", isAuth, deleteEventByIdController)
 router.post("/getAll", getAllEventsController)
 
 //get all user created events
-router.post("/getUser", isAuth, getUserEventsController)
+router.post("/getUser", isAuth , getUserEventsController)
 
 //get all members of that event by eventId
 router.post("/getMembers", isAuth, getEventMembersController)

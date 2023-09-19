@@ -11,5 +11,6 @@ userRouter.get("/rating/:userId", getUserRatingController)
 userRouter.get("/getById/:userId", getUserByIdController)
 
 
+
 module.exports = userRouter
 export {}

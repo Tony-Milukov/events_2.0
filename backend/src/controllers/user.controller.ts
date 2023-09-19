@@ -2,8 +2,8 @@ import {UserInterface} from "../interfaces/user.interface";
 import {RatingInterface} from "../interfaces/rating.interface";
 
 const apiError = require("../utilits/apiError.ts")
-const {bodyValidator,paramValidator} = require("../utilits/validators/request.validator.ts")
-const {loginService, registerService, rateUserService,getUserByIdService,getUserRatingService} = require("../services/user.service.ts")
+const {bodyValidator, paramValidator} = require("../utilits/validators/request.validator.ts")
+const {loginService, registerService, rateUserService, getUserByIdService, getUserRatingService, getUserRoleByIdService} = require("../services/user.service.ts")
 
 const loginController = async (req: any, res: any) => {
     try {
@@ -36,7 +36,7 @@ const rateUserController = async (req: any, res: any) => {
         await getUserByIdService(userId)
 
         //check if int is in range of 1-5
-        rating > 5 || rating < 1 ?  res.json({errorMsg: "rating must be an integer between 1-5"}) : null
+        rating > 5 || rating < 1 ? res.json({errorMsg: "rating must be an integer between 1-5"}) : null
         await rateUserService(rating, user, userId)
 
         res.json({message: `successfully rated user with userId: ${userId}, rated with: ${rating}`}).status(200)
@@ -51,7 +51,7 @@ const getUserRatingController = async (req: any, res: any) => {
         //proof does this user exist
         await getUserByIdService(userId)
 
-        const userRating = await getUserRatingService (userId) as RatingInterface
+        const userRating = await getUserRatingService(userId) as RatingInterface
         res.json(userRating).status(200)
     } catch (e: any) {
         apiError(res, e.errorMsg, e.status)
@@ -62,19 +62,22 @@ const getUserByIdController = async (req: any, res: any) => {
         const userId = paramValidator(req, res, "userId")
 
         //proof does this user exist
-        const user  =  await getUserByIdService(userId) as JSON
+        const user = await getUserByIdService(userId) as JSON
 
         res.json(user).status(200)
     } catch (e: any) {
-        console.log(e)
         apiError(res, e.errorMsg, e.status)
+
     }
+
 }
-module.exports = {
-    loginController,
-    registerController,
-    rateUserController,
-    getUserRatingController,
-    getUserByIdController
-}
-export {}
+
+
+    module.exports = {
+        loginController,
+        registerController,
+        rateUserController,
+        getUserRatingController,
+        getUserByIdController,
+    }
+    export {}
