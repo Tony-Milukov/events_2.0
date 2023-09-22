@@ -3,7 +3,7 @@ import {RatingInterface} from "../interfaces/rating.interface";
 
 const apiError = require("../utilits/apiError.ts")
 const {bodyValidator, paramValidator} = require("../utilits/validators/request.validator.ts")
-const {loginService, registerService, rateUserService, getUserByIdService, getUserRatingService, getUserRoleByIdService} = require("../services/user.service.ts")
+const {loginService, registerService, rateUserService, getUserByIdService, getUserRatingService} = require("../services/user.service.ts")
 
 const loginController = async (req: any, res: any) => {
     try {

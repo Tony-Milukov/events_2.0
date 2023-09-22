@@ -1,6 +1,6 @@
 const bodyValidator = (req: any, res: any, name: string) => {
     const paramValue = req.body[name];
-    if (paramValue === 0 ? false : !paramValue || paramValue === 'undefined') {
+    if (paramValue === undefined || paramValue === null || paramValue === 'undefined') {
         throw {errorMsg: `data <<${name}>> was not sent in body request`}
     }
     return paramValue;

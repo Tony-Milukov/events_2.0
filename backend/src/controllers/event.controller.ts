@@ -10,8 +10,12 @@ const {
     addUserToEventService,
     getEventMembersService,
     getUserEventsService,
-    getJoinedEventsService
+    getJoinedEventsService,
+    joinEventRequestService,
+    getJoinRequestsService,
 } = require("../services/event.service.ts");
+
+
 const createEventController = async (req: any, res: any) => {
     try {
         const title = bodyValidator(req, res, "title")
@@ -80,12 +84,22 @@ const getAllEventsController = async (req: any, res: any) => {
 
 const addUserToEventController = async (req: any, res: any) => {
     try {
-        const eventId = bodyValidator(req, res, "eventId")
 
-        //getting user
+        const requestId = bodyValidator(req, res, "requestId") as number
+        const status = bodyValidator(req, res, "status") as boolean
+
+        //getting user info
         const user = req.user
-        await addUserToEventService(user, eventId)
-        res.json({message: `User with the userId: @${user.id} was added as member to the event @${eventId}`}).status(200)
+        const userRoles = req.roles
+
+        // await response true for added / false for rejecting
+        const response = await addUserToEventService({...user, userRoles}, requestId, status);
+
+        if (!response) {
+            return res.json({message: `You successfully reject join request from user ${user.id}`}).status(200)
+        }
+        res.json({message: `User with the userId: @${user.id} was added as member to the event`}).status(200)
+
     } catch (e: any) {
         apiError(res, e.errorMsg, e.status)
     }
@@ -95,6 +109,7 @@ const getEventMembersController = async (req: any, res: any) => {
         const eventId = bodyValidator(req, res, "eventId")
         const eventMembers = await getEventMembersService(eventId);
         res.json({eventMembers}).status(200)
+
     } catch (e: any) {
         apiError(res, e.errorMsg, e.status)
     }
@@ -118,6 +133,31 @@ const getUserJoinedEventsController = async (req: any, res: any) => {
         apiError(res, e.errorMsg, e.status)
     }
 }
+const joinEventRequestController = async (req: any, res: any) => {
+    try {
+        const userId = req.user.dataValues.id
+        const eventId = bodyValidator(req, res, "eventId")
+        await joinEventRequestService(userId, eventId);
+        res.json({message: `You successfully requested adding you to the Event!`}).status(200)
+    } catch (e: any) {
+        apiError(res, e.errorMsg, e.status)
+    }
+}
+const getJoinRequestsController = async (req: any, res: any) => {
+    try {
+        const userId = req.user.dataValues.id
+
+        //if there is no eventId it will output all request for current user,
+        //else it will give you the output for the event, by its ID
+        const eventId = req.body.eventId as number | undefined | null
+        const eventRequests = await getJoinRequestsService(req.roles, userId,  eventId);
+
+        res.json({requests: eventRequests}).status(200)
+    } catch (e: any) {
+        console.log(e)
+        apiError(res, e.errorMsg, e.status)
+    }
+}
 module.exports = {
     createEventController,
     deleteEventByIdController,
@@ -126,7 +166,9 @@ module.exports = {
     addUserToEventController,
     getUserEventsController,
     getEventMembersController,
-    getUserJoinedEventsController
+    getUserJoinedEventsController,
+    joinEventRequestController,
+    getJoinRequestsController,
 }
 
 export {}

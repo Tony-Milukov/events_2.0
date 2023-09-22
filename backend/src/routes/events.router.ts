@@ -1,7 +1,6 @@
 const express = require("express")
 const router = express.Router()
 const isAuth = require("../middlewares/isAuth.middleware.ts")
-const checkRole = require("../middlewares/checkRole.middleware.ts")
 const {
     createEventController,
     getEventByIdController,
@@ -10,7 +9,10 @@ const {
     addUserToEventController,
     getEventMembersController,
     getUserEventsController,
-    getUserJoinedEventsController
+    getUserJoinedEventsController,
+    joinEventRequestController,
+    getJoinRequestsController
+
 } = require("../controllers/event.controller.ts")
 
 
@@ -28,7 +30,7 @@ router.post("/delete", isAuth, deleteEventByIdController)
 router.post("/getAll", getAllEventsController)
 
 //get all user created events
-router.post("/getUser", isAuth , getUserEventsController)
+router.post("/getUser", isAuth, getUserEventsController)
 
 //get all members of that event by eventId
 router.post("/getMembers", isAuth, getEventMembersController)
@@ -36,7 +38,15 @@ router.post("/getMembers", isAuth, getEventMembersController)
 // adds user from the token, to the event by eventId
 router.put("/addMember", isAuth, addUserToEventController)
 
+// users wants to join an event
+// user send a request to eventCreator for join event
+router.put("/joinRequest", isAuth, joinEventRequestController)
+
+//gets all requests for an event by id
+router.post("/getJoinRequests", isAuth, getJoinRequestsController)
+
 // shows all joined events
 router.post("/getJoined", isAuth, getUserJoinedEventsController)
+
 module.exports = router
 export {}

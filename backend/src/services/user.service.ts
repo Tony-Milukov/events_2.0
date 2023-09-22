@@ -1,7 +1,8 @@
 import {UserInterface} from "../interfaces/user.interface";
+import {RoleInterface} from "../interfaces/role.interface";
 
 const sequelize = require("sequelize")
-const {User, UserRating, Role} = require("../models/main.ts")
+const {User, UserRating} = require("../models/main.ts")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const v4 = require("uuid").v4
@@ -18,6 +19,7 @@ const loginService = async (email: string, password: string) => {
     }
     return jwt.sign({userId: user.id, username: user.username}, process.env.SECRET)
 }
+
 const registerService = async (email: string, password: string) => {
     //look if there is a user with that email address
     const user = await User.findOne({
@@ -125,6 +127,9 @@ const rateUserService = async (rating: number, user: UserInterface, userId: any)
         userId
     })
 }
+const verifyUserRoleService = (roles:RoleInterface[], roleTitle:string): boolean => {
+   return !roles.some((i: any) => i.title !== roleTitle);
+}
 
 
 
@@ -137,5 +142,6 @@ module.exports = {
     rateUserService,
     getUserByIdService,
     getUserRatingService,
+    verifyUserRoleService,
 }
 export {}
