@@ -26,8 +26,15 @@ const User = Sequelize.define("user", {
     verified: {
         type: DataTypes.BOOLEAN,
         default: false
+    },
+    // image: {
+    //     type: DataTypes.STRING,
+    //     default: "default.svg"
+    // },
+    description: {
+        type: DataTypes.STRING,
+        allowNull: true,
     }
-
 })
 module.exports = User
 export {}

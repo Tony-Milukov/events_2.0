@@ -31,11 +31,13 @@ const registerService = async (email: string, password: string) => {
         throw {errorMsg: "user with that email address is already registered", status: 409}
     }
     const hash = await bcrypt.hash(password, 9)
+
     const newUser = await User.create({
         email,
         password: hash,
-        username: `user_${v4()}`
+        username: `user${v4()}`
     })
+
     //if user is not, he is not created, throw error
     if (!newUser) {
         throw {errorMsg: "something went wrong on creating a user", status: 400}
@@ -127,10 +129,27 @@ const rateUserService = async (rating: number, user: UserInterface, userId: any)
         userId
     })
 }
-const verifyUserRoleService = (roles:RoleInterface[], roleTitle:string): boolean => {
-   return !roles.some((i: any) => i.title !== roleTitle);
+const verifyUserRoleService = (roles: RoleInterface[], roleTitle: string): boolean => {
+    return !roles.some((i: any) => i.title !== roleTitle);
 }
 
+const updateUserDataService = async (user: typeof User, username: string | undefined, description: string | undefined) => {
+    if(username) {
+        const userNameExists = await User.findOne({
+            where: {
+                username
+            }
+        })
+        if (userNameExists) {
+            throw {errorMsg: "This username already exists!", status: 409}
+        }
+    }
+
+    await user.update({
+        ...(username ? {username} : {}),
+        ...(description ? {description} : {})
+    })
+}
 
 
 module.exports = {
@@ -143,5 +162,6 @@ module.exports = {
     getUserByIdService,
     getUserRatingService,
     verifyUserRoleService,
+    updateUserDataService
 }
 export {}

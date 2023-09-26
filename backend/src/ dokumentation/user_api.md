@@ -95,4 +95,24 @@ GET /api/user/rating/:userId
     "ratingsCount": <count>
   }
   ```
-  
+
+##### Update userData
+
+```http
+POST /api/user/update
+```
+
+| Parameter     | Type     | Description                 |
+|:--------------|:---------|:----------------------------|
+| `username`    | `string` | **one of params required**. |
+| `descripiton` | `string` | **one of params required**. |
+
+**Response:**
+
+- Status Code: 200 OK
+- Body: JSON object containing user rating information.
+  ```json
+  {
+    "message": "Successfully updated user information"
+  }
+  ```

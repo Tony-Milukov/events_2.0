@@ -1,9 +1,18 @@
 import {UserInterface} from "../interfaces/user.interface";
 import {RatingInterface} from "../interfaces/rating.interface";
+import {Model, Optional} from "sequelize";
 
 const apiError = require("../utilits/apiError.ts")
 const {bodyValidator, paramValidator} = require("../utilits/validators/request.validator.ts")
-const {loginService, registerService, rateUserService, getUserByIdService, getUserRatingService} = require("../services/user.service.ts")
+const {User} = require("../models/main.ts")
+const {
+    loginService,
+    registerService,
+    rateUserService,
+    getUserByIdService,
+    getUserRatingService,
+    updateUserDataService
+} = require("../services/user.service.ts")
 
 const loginController = async (req: any, res: any) => {
     try {
@@ -72,12 +81,30 @@ const getUserByIdController = async (req: any, res: any) => {
 
 }
 
+const updateUserDataController = async (req: any, res: any) => {
+    try {
+        const username: string | undefined = req.body.username;
+        const description: string | undefined = req.body.description;
 
-    module.exports = {
-        loginController,
-        registerController,
-        rateUserController,
-        getUserRatingController,
-        getUserByIdController,
+        //if all of params are undefined
+        if (username === undefined && description === undefined) {
+           return  apiError(res, "you have to one, or more parameters update", 400)
+        }
+
+        const user: typeof User = req.user as typeof User
+        await updateUserDataService(user, username, description)
+        res.json("You successfully updated userInformation").status(200)
+    } catch (e: any) {
+        apiError(res, e.errorMsg, e.status)
     }
-    export {}
+}
+
+module.exports = {
+    loginController,
+    registerController,
+    rateUserController,
+    getUserRatingController,
+    getUserByIdController,
+    updateUserDataController,
+}
+export {}
