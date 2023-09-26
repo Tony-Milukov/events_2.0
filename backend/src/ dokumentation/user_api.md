@@ -99,7 +99,7 @@ GET /api/user/rating/:userId
 ##### Update userData
 
 ```http
-POST /api/user/update
+PUT /api/user/update
 ```
 
 | Parameter     | Type     | Description                 |

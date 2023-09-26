@@ -9,7 +9,7 @@ userRouter.put("/register", registerController)
 userRouter.put("/rating", isAuth,rateUserController)
 userRouter.get("/rating/:userId", getUserRatingController)
 userRouter.get("/getById/:userId", getUserByIdController)
-userRouter.post("/update",isAuth, updateUserDataController)
+userRouter.put("/update",isAuth, updateUserDataController)
 
 
 module.exports = userRouter
