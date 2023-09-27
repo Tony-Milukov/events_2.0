@@ -11,13 +11,17 @@ const {
     getUserEventsController,
     getUserJoinedEventsController,
     joinEventRequestController,
-    getJoinRequestsController
+    getJoinRequestsController,
+    updateEventController
 
 } = require("../controllers/event.controller.ts")
 
 
 //create event
 router.put("/create", isAuth, createEventController)
+
+//update event
+router.put("/update", isAuth, updateEventController)
 
 //getEvent by eventId
 router.get("/getById/:eventId", getEventByIdController)

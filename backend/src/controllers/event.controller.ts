@@ -13,6 +13,7 @@ const {
     getJoinedEventsService,
     joinEventRequestService,
     getJoinRequestsService,
+    updateEventService
 } = require("../services/event.service.ts");
 
 
@@ -150,11 +151,37 @@ const getJoinRequestsController = async (req: any, res: any) => {
         //if there is no eventId it will output all request for current user,
         //else it will give you the output for the event, by its ID
         const eventId = req.body.eventId as number | undefined | null
-        const eventRequests = await getJoinRequestsService(req.roles, userId,  eventId);
+        const eventRequests = await getJoinRequestsService(req.roles, userId, eventId);
 
         res.json({requests: eventRequests}).status(200)
     } catch (e: any) {
-        console.log(e)
+        apiError(res, e.errorMsg, e.status)
+    }
+}
+const updateEventController = async (req: any, res: any) => {
+    try {
+        const user = req.user
+        const title: string | undefined = req.body.title
+        const description: string | undefined  = req.body.description
+        const price: number | undefined  = req.body.price
+        const startLocation: string | undefined  = req.body.startLocation
+        const endLocation: string | undefined  = req.body.endLocation
+
+        //if nothing to update
+        if (
+            title === undefined &&
+            price === undefined &&
+            startLocation === undefined &&
+            endLocation === undefined &&
+            description === undefined
+        ) {
+           return apiError(res,"you have to change minimal one param!!")
+        }
+
+        const eventId = bodyValidator(req, res, "eventId") as number
+        await updateEventService(eventId, title, price,description, startLocation, endLocation);
+        res.json({message: `Successfully updated event with evenId: ${eventId}`}).status(200)
+    } catch (e: any) {
         apiError(res, e.errorMsg, e.status)
     }
 }
@@ -169,6 +196,7 @@ module.exports = {
     getUserJoinedEventsController,
     joinEventRequestController,
     getJoinRequestsController,
+    updateEventController
 }
 
 export {}

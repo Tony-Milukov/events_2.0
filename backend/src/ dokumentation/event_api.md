@@ -28,6 +28,30 @@ PUT /api/event/create
     "eventId": "<Event ID>"
   }
   ```
+#### Update Event
+
+```http
+PUT /api/event/update
+```
+
+| Parameter        | Type       | Description                                                                         |
+| :--------------- | :--------- |:------------------------------------------------------------------------------------|
+| `title`        | `string` | **one of this Required**. The title of the event.                                   |
+| `description`  | `string` | **one of this Required**. Description of the event.                                 |
+| `price`        | `number` | **one of this Required**. Price of the event.                                       |
+| `endLocation`  | `string` | **one of this Required**. Location where the event ends.                            |
+| `startLocation`| `string` | **one of this Required** Location where the event starts (optional).                |
+| `links`        | `array`  | **one of this Required** Array of JSON objects representing event links (optional). |
+ 
+**Response:**
+
+- Status Code: 200 OK
+- Body: JSON object containing a success message and the ID of the created event.
+  ```json
+  {
+    "message": "Successfully updated event with evenId: 41"
+  }
+  ```
 
 #### Get Event by ID
 

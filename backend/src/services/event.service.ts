@@ -5,6 +5,14 @@ import {RoleInterface} from "../interfaces/role.interface";
 const {User, Event, EventMember, JoinEventRequest} = require("../models/main.ts")
 const {getUserByIdService, verifyUserRoleService} = require("./user.service.ts")
 
+const findEventByPk = async (eventId:number) => {
+    const event = await Event.findByPk(eventId)
+    if (!event) {
+        throw {errorMsg: "event with that eventId was not defined", status: 404}
+    }
+    return event
+}
+
 const createEventService = async (title: string, description: string, price: number, user: any, endLocation: string, startLocation: string | null, links: JSON | null) => {
     const event = await Event.create({
         title,
@@ -86,15 +94,13 @@ const addUserToEventService = async (user: UserInterface, joinRequestId: number,
     }
 
     // const getting event by its id in joinRequest obj
-    const event = await Event.findByPk(joinEventRequest.dataValues.eventId)
+    const event = await findEventByPk(joinEventRequest.dataValues.eventId)
 
     // const getting event by its id in joinRequest obj
     // requested user to add to an event
     const newMemberUser = await User.findByPk(joinEventRequest.dataValues.userId)
 
-    if (!event) {
-        throw {errorMsg: "event with that eventId was not defined", status: 404}
-    }
+
 
     //check if the user from JWT is the creator from the event
     //or is the user from JWT an ADMIN
@@ -107,10 +113,7 @@ const addUserToEventService = async (user: UserInterface, joinRequestId: number,
     return true
 }
 const getEventMembersService = async (eventId: any) => {
-    const event = await Event.findByPk(eventId)
-    if (!event) {
-        throw {errorMsg: "event with that eventId was not defined", status: 404}
-    }
+    const event = await findEventByPk(eventId)
 
     return await event.getUsers()
 }
@@ -126,9 +129,7 @@ const getJoinedEventsService = async (user: any) => {
     return events ?? []
 }
 const joinEventRequestService = async (userId: number, eventId: number) => {
-    const event = await Event.findByPk(eventId)
-
-    if (!event) throw {errorMsg: "event with that eventId was not defined", status: 404}
+    const event = await findEventByPk(eventId)
 
     await JoinEventRequest.create({
         userId: userId,
@@ -156,6 +157,17 @@ const getJoinRequestsService = async (roles: RoleInterface[],userId: number,  ev
         })
     }
 }
+const updateEventService = async (eventId: number,title: string | undefined, price: number | undefined, description: string | undefined, startLocation: string | undefined, endLocation: string | undefined) => {
+    const event = await findEventByPk(eventId)
+
+    await event.update({
+        ...(title ? {title} : {}),
+        ...(price ? {price} : {}),
+        ...(description ? {description} : {}),
+        ...(startLocation ? {startLocation} : {}),
+        ...(endLocation ? {endLocation} : {}),
+    })
+}
 
 module.exports = {
     createEventService,
@@ -167,7 +179,8 @@ module.exports = {
     getUserEventsService,
     getJoinedEventsService,
     joinEventRequestService,
-    getJoinRequestsService
+    getJoinRequestsService,
+    updateEventService
 }
 export {}
 
