@@ -7,7 +7,7 @@ const sequelize = require('./db.ts');
 const router = require('./routes/main.ts');
 const bodyParser = require("body-parser")
 const helmet = require('helmet')
-
+const badRequest = require("./middlewares/badRequest.middleware.ts")
 const app = express();
 
 app.use(bodyParser.json())
@@ -16,7 +16,7 @@ app.use(cors());
 app.use(helmet())
 
 app.use('/api', router);
-
+app.use (badRequest)
 const start = async (PORT: any) => {
     try {
         await sequelize.authenticate();
