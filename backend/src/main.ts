@@ -16,7 +16,9 @@ app.use(cors());
 app.use(helmet())
 
 app.use('/api', router);
-app.use (badRequest)
+// app.use(badRequest)
+
+
 const start = async (PORT: any) => {
     try {
         await sequelize.authenticate();
