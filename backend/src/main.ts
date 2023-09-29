@@ -6,10 +6,14 @@ const cors = require('cors');
 const sequelize = require('./db.ts');
 const router = require('./routes/main.ts');
 const bodyParser = require("body-parser")
+const helmet = require('helmet')
+
 const app = express();
 
 app.use(bodyParser.json())
 app.use(cors());
+
+app.use(helmet())
 
 app.use('/api', router);
 

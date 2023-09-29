@@ -46,5 +46,6 @@ The documentation for this application is created using **Markdown** language an
 - If you find any issues or want to contribute to the documentation, please submit a pull request or open an issue in this repository.
 
 ## Explore and Enjoy!
-
+# test it!
+## https://lionfish-app-llqxo.ondigitalocean.app/api/
 Our application aims to make event management and participation a seamless experience for users. Whether you're an event organizer or an attendee, we hope you find our platform useful and enjoyable. If you have any questions or need assistance, please refer to our API documentation or reach out to our support team. Happy event planning and participation!
