@@ -157,7 +157,7 @@ const getJoinRequestsService = async (roles: RoleInterface[],userId: number,  ev
         })
     }
 }
-const updateEventService = async (eventId: number,title: string | undefined, price: number | undefined, description: string | undefined, startLocation: string | undefined, endLocation: string | undefined) => {
+const updateEventService = async (eventId: number,title: string | undefined, price: number | undefined, description: string | undefined, startLocation: string | undefined, endLocation: string | undefined, links: JSON) => {
     const event = await findEventByPk(eventId)
 
     await event.update({
@@ -166,6 +166,7 @@ const updateEventService = async (eventId: number,title: string | undefined, pri
         ...(description ? {description} : {}),
         ...(startLocation ? {startLocation} : {}),
         ...(endLocation ? {endLocation} : {}),
+        ...(links ? {links} : {}),
     })
 }
 

@@ -1,6 +1,6 @@
 const { Sequelize } = require('sequelize');
 
-module.exports = new Sequelize("postgres://root:YA2v8kHYJb9BveW5n9RAsxF8YxkLTn5S@dpg-cjve37nhdsdc73dsn1qg-a.frankfurt-postgres.render.com/events_gngx", {
+module.exports = new Sequelize(process.env.DB_CONNECT_LINK, {
     dialect: 'postgres',
     dialectOptions: {
         ssl: {

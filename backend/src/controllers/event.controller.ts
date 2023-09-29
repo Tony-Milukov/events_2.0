@@ -166,6 +166,7 @@ const updateEventController = async (req: any, res: any) => {
         const price: number | undefined  = req.body.price
         const startLocation: string | undefined  = req.body.startLocation
         const endLocation: string | undefined  = req.body.endLocation
+        const links: JSON | undefined = req.body.links
 
         //if nothing to update
         if (
@@ -173,13 +174,14 @@ const updateEventController = async (req: any, res: any) => {
             price === undefined &&
             startLocation === undefined &&
             endLocation === undefined &&
+            links === undefined &&
             description === undefined
         ) {
            return apiError(res,"you have to change minimal one param!!")
         }
 
         const eventId = bodyValidator(req, res, "eventId") as number
-        await updateEventService(eventId, title, price,description, startLocation, endLocation);
+        await updateEventService(eventId, title, price,description, startLocation, endLocation, links);
         res.json({message: `Successfully updated event with evenId: ${eventId}`}).status(200)
     } catch (e: any) {
         apiError(res, e.errorMsg, e.status)
