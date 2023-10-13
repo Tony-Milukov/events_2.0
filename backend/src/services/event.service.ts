@@ -1,6 +1,7 @@
 import {EventInterface} from "../interfaces/event.interface";
 import {UserInterface} from "../interfaces/user.interface";
 import {RoleInterface} from "../interfaces/role.interface";
+import {Op} from "sequelize";
 
 const sharp = require('sharp');
 const {User, Event, EventMember, JoinEventRequest} = require("../models/main.ts")
@@ -168,6 +169,19 @@ const getJoinRequestsService = async (roles: RoleInterface[],userId: number,  ev
     }
 }
 const updateEventService = async (eventId: number,title: string | undefined, price: number | undefined, description: string | undefined, startLocation: string | undefined, endLocation: string | undefined, links: JSON, files: any) => {
+    //if nothing to update
+    if (
+        title === undefined &&
+        price === undefined &&
+        startLocation === undefined &&
+        endLocation === undefined &&
+        links === undefined &&
+        description === undefined &&
+        files.image === undefined
+    ) {
+        throw {message: "you have to change minimal one param!!"}
+    }
+
     const event = await findEventByPk(eventId)
     if(files && files.image && files.image.data) {
         await sharp(files.image.data)
@@ -188,7 +202,17 @@ const updateEventService = async (eventId: number,title: string | undefined, pri
         ...(files && files.image ? {image: `${event.dataValues.id}.webp`} : {}),
     })
 }
-
+const searchEventsByValueService = async (limit:number, offset:number, value:string) => {
+  return await Event.findAndCountAll({
+        limit,
+        offset,
+      where:{
+          title: {
+              [Op.like]: `%${value}%`
+          }
+      }
+    })
+}
 module.exports = {
     createEventService,
     getEventByIdService,
@@ -200,7 +224,8 @@ module.exports = {
     getJoinedEventsService,
     joinEventRequestService,
     getJoinRequestsService,
-    updateEventService
+    updateEventService,
+    searchEventsByValueService
 }
 export {}
 

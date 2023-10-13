@@ -15,6 +15,7 @@ const {
     joinEventRequestService,
     getJoinRequestsService,
     updateEventService,
+    searchEventsByValueService
 
 } = require("../services/event.service.ts");
 const {verifyUserRoleService} = require("../services/user.service.ts")
@@ -40,7 +41,7 @@ const createEventController = async (req: any, res: any) => {
 }
 const getEventByIdController = async (req: any, res: any) => {
     try {
-        const eventId:number = paramValidator(req, res, "eventId");
+        const eventId: number = paramValidator(req, res, "eventId");
         const event = await getEventByIdService(eventId)
         res.json({event}).status(200)
     } catch (e: any) {
@@ -50,13 +51,13 @@ const getEventByIdController = async (req: any, res: any) => {
 }
 const deleteEventByIdController = async (req: any, res: any) => {
     try {
-        const eventId:number = bodyValidator(req, res, "eventId");
+        const eventId: number = bodyValidator(req, res, "eventId");
 
         //getting that event
         const event = await getEventByIdService(eventId)
 
         //proof if the events belongs to the user
-        if (event.userId === req.user.id || verifyUserRoleService(req.roles, "ADMIN") ) {
+        if (event.userId === req.user.id || verifyUserRoleService(req.roles, "ADMIN")) {
             await deleteEventByIdService(eventId)
             res.status(200).json({message: `Event ${eventId} was successfully deleted`})
         }
@@ -145,7 +146,7 @@ const joinEventRequestController = async (req: any, res: any) => {
 }
 const getJoinRequestsController = async (req: any, res: any) => {
     try {
-        const userId : number = req.user.dataValues.id
+        const userId: number = req.user.dataValues.id
 
         //if there is no eventId it will output all request for current user,
         //else it will give you the output for the event, by its ID
@@ -157,35 +158,34 @@ const getJoinRequestsController = async (req: any, res: any) => {
         apiError(res, e.errorMsg, e.status)
     }
 }
+
+const searchEventsByValueController = async (req: any, res: any) => {
+    try {
+        const pageSize = bodyValidator(req, res, 'pageSize');
+        const page = bodyValidator(req, res, 'page');
+        const offset = pageSize * (page === 1 ? 0 : page - 1);
+        const value = paramValidator(req,res, "value")
+        const events = await searchEventsByValueService(page, offset, value)
+        res.json({events}).status(200)
+    } catch (e: any) {
+        console.log(e)
+        apiError(res, e.errorMsg, e.status)
+    }
+}
 const updateEventController = async (req: any, res: any) => {
     try {
-        const user = req.user
         const title: string | undefined = req.body.title
-        const description: string | undefined  = req.body.description
-        const price: number | undefined  = req.body.price
-        const startLocation: string | undefined  = req.body.startLocation
-        const endLocation: string | undefined  = req.body.endLocation
+        const description: string | undefined = req.body.description
+        const price: number | undefined = req.body.price
+        const startLocation: string | undefined = req.body.startLocation
+        const endLocation: string | undefined = req.body.endLocation
         const links: JSON | undefined = req.body.links
         const files: any = req.files
 
-        //if nothing to update
-        if (
-            title === undefined &&
-            price === undefined &&
-            startLocation === undefined &&
-            endLocation === undefined &&
-            links === undefined &&
-            description === undefined &&
-            files.image === undefined
-        ) {
-           return apiError(res,"you have to change minimal one param!!")
-        }
-
         const eventId = bodyValidator(req, res, "eventId") as number
-        await updateEventService(eventId, title, price,description, startLocation, endLocation, links, files);
+        await updateEventService(eventId, title, price, description, startLocation, endLocation, links, files);
         res.json({message: `Successfully updated event with evenId: ${eventId}`}).status(200)
     } catch (e: any) {
-        console.log(e)
         apiError(res, e.errorMsg, e.status)
     }
 }
@@ -200,7 +200,8 @@ module.exports = {
     getUserJoinedEventsController,
     joinEventRequestController,
     getJoinRequestsController,
-    updateEventController
+    updateEventController,
+    searchEventsByValueController
 }
 
 export {}

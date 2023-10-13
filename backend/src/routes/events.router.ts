@@ -12,7 +12,8 @@ const {
     getUserJoinedEventsController,
     joinEventRequestController,
     getJoinRequestsController,
-    updateEventController
+    updateEventController,
+    searchEventsByValueController
 
 } = require("../controllers/event.controller.ts")
 
@@ -52,5 +53,7 @@ router.post("/getJoinRequests", isAuth, getJoinRequestsController)
 // shows all joined events
 router.post("/getJoined", isAuth, getUserJoinedEventsController)
 
+// gets all events by :value
+router.post("/search/:value", searchEventsByValueController)
 module.exports = router
 export {}
