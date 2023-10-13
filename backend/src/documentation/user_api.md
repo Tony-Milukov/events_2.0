@@ -116,3 +116,21 @@ PUT /api/user/update
     "message": "Successfully updated user information"
   }
   ```
+
+```http
+PUT /api/user/pic
+```
+
+| Parameter | Type   | Description   |
+|:----------|:-------|:--------------|
+| `img`     | `file` | **Required**. |
+
+**Response:**
+
+- Status Code: 200 OK
+- Body: JSON object containing upload confirmation.
+  ```json
+  {
+    "message": "You successfully updated user information"
+  }
+  ```

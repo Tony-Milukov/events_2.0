@@ -7,7 +7,7 @@ const { addUserRoleController, createRoleController, deleteRoleController } = re
 
 roleRouter.put('/user', isAuth, addUserRoleController)
 roleRouter.put('/', isAuth, createRoleController)
-roleRouter.delete('/', isAuth, deleteRoleController)
+roleRouter.post('/', isAuth, deleteRoleController)
 
 
 

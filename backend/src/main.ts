@@ -1,22 +1,26 @@
-
 require('dotenv')
-    .config({ path: './.env' });
+    .config({path: './.env'});
 const express = require('express');
 const cors = require('cors');
 const sequelize = require('./db.ts');
 const router = require('./routes/main.ts');
 const bodyParser = require("body-parser")
 const helmet = require('helmet')
-const badRequest = require("./middlewares/badRequest.middleware.ts")
+const fileUpload = require('express-fileupload');
+
 const app = express();
 
+app.use(fileUpload());
 app.use(bodyParser.json())
+app.use(express.urlencoded({ extended: true }));
+
+app.use('/images', express.static('src/public'));
+
 app.use(cors());
 
 app.use(helmet())
 
 app.use('/api', router);
-// app.use(badRequest)
 
 
 const start = async (PORT: any) => {

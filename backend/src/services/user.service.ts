@@ -1,13 +1,16 @@
 import {UserInterface} from "../interfaces/user.interface";
 import {RoleInterface} from "../interfaces/role.interface";
 
+
 const sequelize = require("sequelize")
 const {User, UserRating} = require("../models/main.ts")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const v4 = require("uuid").v4
-require('dotenv')
-    .config({path: '../.env'});
+require('dotenv').config({path: '../.env'});
+const sharp = require('sharp');
+const fs = require("fs").promises
+const path = require("path")
 const loginService = async (email: string, password: string) => {
     //find user by email
     const user = await User.findOne({
@@ -59,7 +62,7 @@ const getTokenService = (req: any) => {
     return false;
 };
 
-const decodeJwtService = async (token: string) =>
+const decodeJwtService = (token: string) =>
     jwt.verify(token, process.env.SECRET, (err: any, decoded: any) => {
             if (err) {
                 return false;
@@ -134,7 +137,7 @@ const verifyUserRoleService = (roles: RoleInterface[], roleTitle: string): boole
 }
 
 const updateUserDataService = async (user: typeof User, username: string | undefined, description: string | undefined) => {
-    if(username) {
+    if (username) {
         const userNameExists = await User.findOne({
             where: {
                 username
@@ -151,6 +154,16 @@ const updateUserDataService = async (user: typeof User, username: string | undef
     })
 }
 
+const updateUserProfilePicService = async (user: typeof User, image: Buffer) => {
+    await sharp(image)
+        .webp({quality: 80})
+        .toFile(`src/public/users/${user.dataValues.id}.webp`)
+
+    await user.update({
+        image: `${user.dataValues.id}.webp`
+    })
+}
+
 
 module.exports = {
     loginService,
@@ -162,6 +175,7 @@ module.exports = {
     getUserByIdService,
     getUserRatingService,
     verifyUserRoleService,
-    updateUserDataService
+    updateUserDataService,
+    updateUserProfilePicService
 }
 export {}

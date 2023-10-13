@@ -2,6 +2,7 @@ import {EventInterface} from "../interfaces/event.interface";
 import {UserInterface} from "../interfaces/user.interface";
 import {RoleInterface} from "../interfaces/role.interface";
 
+const sharp = require('sharp');
 const {User, Event, EventMember, JoinEventRequest} = require("../models/main.ts")
 const {getUserByIdService, verifyUserRoleService} = require("./user.service.ts")
 
@@ -13,7 +14,7 @@ const findEventByPk = async (eventId:number) => {
     return event
 }
 
-const createEventService = async (title: string, description: string, price: number, user: any, endLocation: string, startLocation: string | null, links: JSON | null) => {
+const createEventService = async (title: string, description: string, price: number, user: any, endLocation: string, startLocation: string | null, links: JSON | null, files: any) => {
     const event = await Event.create({
         title,
         description,
@@ -23,6 +24,15 @@ const createEventService = async (title: string, description: string, price: num
         links,
         userId: user.id
     })
+   if(files && files.image && files.image.data) {
+       await sharp(files.image.data)
+           .webp({quality: 80})
+           .toFile(`src/public/events/${event.dataValues.id}.webp`)
+
+       await event.update({
+           image: `${event.dataValues.id}.webp`
+       })
+   }
     if (!event) {
         throw {errorMsg: "something went wrong on creating an event", status: 400}
     }
@@ -157,9 +167,17 @@ const getJoinRequestsService = async (roles: RoleInterface[],userId: number,  ev
         })
     }
 }
-const updateEventService = async (eventId: number,title: string | undefined, price: number | undefined, description: string | undefined, startLocation: string | undefined, endLocation: string | undefined, links: JSON) => {
+const updateEventService = async (eventId: number,title: string | undefined, price: number | undefined, description: string | undefined, startLocation: string | undefined, endLocation: string | undefined, links: JSON, files: any) => {
     const event = await findEventByPk(eventId)
+    if(files && files.image && files.image.data) {
+        await sharp(files.image.data)
+            .webp({quality: 80})
+            .toFile(`src/public/events/${event.dataValues.id}.webp`)
 
+        await event.update({
+            image: `${event.dataValues.id}.webp`
+        })
+    }
     await event.update({
         ...(title ? {title} : {}),
         ...(price ? {price} : {}),
@@ -167,6 +185,7 @@ const updateEventService = async (eventId: number,title: string | undefined, pri
         ...(startLocation ? {startLocation} : {}),
         ...(endLocation ? {endLocation} : {}),
         ...(links ? {links} : {}),
+        ...(files && files.image ? {image: `${event.dataValues.id}.webp`} : {}),
     })
 }
 

@@ -27,10 +27,10 @@ const User = Sequelize.define("user", {
         type: DataTypes.BOOLEAN,
         default: false
     },
-    // image: {
-    //     type: DataTypes.STRING,
-    //     default: "default.svg"
-    // },
+    image: {
+        type: DataTypes.STRING,
+        default: "default.webp"
+    },
     description: {
         type: DataTypes.STRING,
         allowNull: true,

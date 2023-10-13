@@ -40,7 +40,7 @@ router.post("/getUser", isAuth, getUserEventsController)
 router.post("/getMembers", isAuth, getEventMembersController)
 
 // adds user from the token, to the event by eventId
-router.put("/addMember", isAuth, addUserToEventController)
+router.put("/acceptJoinRequest", isAuth, addUserToEventController)
 
 // users wants to join an event
 // user send a request to eventCreator for join event

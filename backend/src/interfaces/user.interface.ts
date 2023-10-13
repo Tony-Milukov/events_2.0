@@ -5,5 +5,6 @@ export interface UserInterface {
     email: string,
     string: string,
     verified: boolean,
+    image: string,
     roles: RoleInterface[] | []
 }

@@ -1,6 +1,7 @@
 import {UserInterface} from "../interfaces/user.interface";
 
 const apiError = require("../utilits/apiError.ts")
+const {User} = require("../models/main")
 const {bodyValidator, paramValidator} = require("../utilits/validators/request.validator.ts");
 const {
     createEventService,
@@ -13,35 +14,33 @@ const {
     getJoinedEventsService,
     joinEventRequestService,
     getJoinRequestsService,
-    updateEventService
-} = require("../services/event.service.ts");
+    updateEventService,
 
+} = require("../services/event.service.ts");
+const {verifyUserRoleService} = require("../services/user.service.ts")
 
 const createEventController = async (req: any, res: any) => {
     try {
-        const title = bodyValidator(req, res, "title")
-        const description = bodyValidator(req, res, "description")
-        const price = bodyValidator(req, res, "price")
-        const endLocation = bodyValidator(req, res, "endLocation")
+        const title: string = bodyValidator(req, res, "title")
+        const description: string = bodyValidator(req, res, "description")
+        const price: string = bodyValidator(req, res, "price")
+        const endLocation: string = bodyValidator(req, res, "endLocation")
+        const files: any = req.files
+
         // are allowed to be null
         const links = req.body.links || [] as JSON | null | []
         const startLocation = req.body.startLocation || ""
-        console.log({
-            title,
-            links,
-            price,
-            endLocation
-        })
         const user = req.user
-        const event = await createEventService(title, description, price, user, endLocation, startLocation, links);
+        const event = await createEventService(title, description, price, user, endLocation, startLocation, links, files);
         res.json({message: "Event was created successfully!", eventId: event.id}).status(200)
     } catch (e: any) {
+        console.log(e)
         apiError(res, e.errorMsg, e.status)
     }
 }
 const getEventByIdController = async (req: any, res: any) => {
     try {
-        const eventId = paramValidator(req, res, "eventId");
+        const eventId:number = paramValidator(req, res, "eventId");
         const event = await getEventByIdService(eventId)
         res.json({event}).status(200)
     } catch (e: any) {
@@ -51,22 +50,22 @@ const getEventByIdController = async (req: any, res: any) => {
 }
 const deleteEventByIdController = async (req: any, res: any) => {
     try {
-        const eventId = bodyValidator(req, res, "eventId");
+        const eventId:number = bodyValidator(req, res, "eventId");
 
         //getting that event
         const event = await getEventByIdService(eventId)
 
         //proof if the events belongs to the user
-        if (event.userId === req.user.id) {
+        if (event.userId === req.user.id || verifyUserRoleService(req.roles, "ADMIN") ) {
             await deleteEventByIdService(eventId)
             res.status(200).json({message: `Event ${eventId} was successfully deleted`})
         }
-
         // if there is no permission
         else {
             res.status(403).json({message: "you have no permission to do it"})
         }
     } catch (e: any) {
+        console.log(e)
         apiError(res, e.errorMsg, e.status)
     }
 }
@@ -146,7 +145,7 @@ const joinEventRequestController = async (req: any, res: any) => {
 }
 const getJoinRequestsController = async (req: any, res: any) => {
     try {
-        const userId = req.user.dataValues.id
+        const userId : number = req.user.dataValues.id
 
         //if there is no eventId it will output all request for current user,
         //else it will give you the output for the event, by its ID
@@ -167,6 +166,7 @@ const updateEventController = async (req: any, res: any) => {
         const startLocation: string | undefined  = req.body.startLocation
         const endLocation: string | undefined  = req.body.endLocation
         const links: JSON | undefined = req.body.links
+        const files: any = req.files
 
         //if nothing to update
         if (
@@ -175,15 +175,17 @@ const updateEventController = async (req: any, res: any) => {
             startLocation === undefined &&
             endLocation === undefined &&
             links === undefined &&
-            description === undefined
+            description === undefined &&
+            files.image === undefined
         ) {
            return apiError(res,"you have to change minimal one param!!")
         }
 
         const eventId = bodyValidator(req, res, "eventId") as number
-        await updateEventService(eventId, title, price,description, startLocation, endLocation, links);
+        await updateEventService(eventId, title, price,description, startLocation, endLocation, links, files);
         res.json({message: `Successfully updated event with evenId: ${eventId}`}).status(200)
     } catch (e: any) {
+        console.log(e)
         apiError(res, e.errorMsg, e.status)
     }
 }

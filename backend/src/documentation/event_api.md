@@ -9,14 +9,15 @@ The Event API provides endpoints for managing events, including creating, retrie
 PUT /api/event/create
 ```
 
-| Parameter        | Type       | Description                                           |
-| :--------------- | :--------- | :---------------------------------------------------- |
-| `title`        | `string` | **Required**. The title of the event.                |
-| `description`  | `string` | **Required**. Description of the event.              |
-| `price`        | `number` | **Required**. Price of the event.                    |
-| `endLocation`  | `string` | **Required**. Location where the event ends.         |
-| `startLocation`| `string` | Location where the event starts (optional).           |
-| `links`        | `array`  | Array of JSON objects representing event links (optional). |
+| Parameter       | Type     | Description                                                |
+|:----------------|:---------|:-----------------------------------------------------------|
+| `title`         | `string` | **Required**. The title of the event.                      |
+| `description`   | `string` | **Required**. Description of the event.                    |
+| `price`         | `number` | **Required**. Price of the event.                          |
+| `endLocation`   | `string` | **Required**. Location where the event ends.               |
+| `startLocation` | `string` | Location where the event starts (optional).                |
+| `links`         | `array`  | Array of JSON objects representing event links (optional). |
+| `image`         | `file`   | Image of the event (optional).                             |
 
 **Response:**
 
@@ -150,7 +151,7 @@ POST /api/event/getAll
 #### Accept Join Request
 
 ```http
-PUT /api/event/addMember
+PUT /api/event/acceptRequest
 ```
 
 | Parameter   | Type       | Description                   |

@@ -1,17 +1,19 @@
 import {UserInterface} from "../interfaces/user.interface";
 import {RatingInterface} from "../interfaces/rating.interface";
-import {Model, Optional} from "sequelize";
 
 const apiError = require("../utilits/apiError.ts")
 const {bodyValidator, paramValidator} = require("../utilits/validators/request.validator.ts")
 const {User} = require("../models/main.ts")
+
 const {
     loginService,
     registerService,
     rateUserService,
     getUserByIdService,
     getUserRatingService,
-    updateUserDataService
+    updateUserDataService,
+    updateUserProfilePicService,
+    decodeJwtService
 } = require("../services/user.service.ts")
 
 const loginController = async (req: any, res: any) => {
@@ -20,7 +22,12 @@ const loginController = async (req: any, res: any) => {
         const password = bodyValidator(req, res, "password")
         const token = await loginService(email, password)
 
-        res.json({message: "successfully logged in", token}).status(200)
+        //only for Thunkable Project
+        const userId = decodeJwtService(token).userId
+        res.json({message: "successfully logged in", token, userId}).status(200)
+
+        //regular
+        // res.json({message: "successfully logged in", token}).status(200)
     } catch (e: any) {
         apiError(res, e.errorMsg, e.status)
     }
@@ -30,7 +37,13 @@ const registerController = async (req: any, res: any) => {
         const email = bodyValidator(req, res, "email")
         const password = bodyValidator(req, res, "password")
         const token = await registerService(email, password)
-        res.json({message: "successfully registered", token}).status(200)
+
+        //only for Thunkable Project
+        const userId = decodeJwtService(token).userId
+        res.json({message: "successfully registered", token, userId}).status(200)
+
+        //regular
+        // res.json({message: "successfully registered in", token}).status(200)
     } catch (e: any) {
         apiError(res, e.errorMsg, e.status)
     }
@@ -88,13 +101,30 @@ const updateUserDataController = async (req: any, res: any) => {
 
         //if all of params are undefined
         if (username === undefined && description === undefined) {
-           return  apiError(res, "you have to one, or more parameters update", 400)
+            return apiError(res, "you have to one, or more parameters update", 400)
         }
 
         const user: typeof User = req.user as typeof User
         await updateUserDataService(user, username, description)
         res.json("You successfully updated userInformation").status(200)
     } catch (e: any) {
+        apiError(res, e.errorMsg, e.status)
+    }
+}
+
+const updateUserProfilePicController = async (req: any, res: any) => {
+    try {
+        const user: typeof User = req.user
+        const image = req.files.image.data
+
+        if (image) {
+            await updateUserProfilePicService(user, image)
+        } else {
+            return res.json({message: "You have to send an image!"}).status(400)
+        }
+        res.json({message: "You successfully updated user information"}).status(200)
+    } catch (e: any) {
+        console.log(e)
         apiError(res, e.errorMsg, e.status)
     }
 }
@@ -106,5 +136,6 @@ module.exports = {
     getUserRatingController,
     getUserByIdController,
     updateUserDataController,
+    updateUserProfilePicController
 }
 export {}
