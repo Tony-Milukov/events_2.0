@@ -320,3 +320,39 @@ POST /api/event/getMembers
     ]
   }
   ```
+#### Search Event by title
+
+  ```http
+POST /api/event/search/:value
+```
+
+| Parameter  | Type     | Description                                            |
+|:-----------|:---------|:-------------------------------------------------------|
+| `value`    | `string` | **Required**. The searching param                      |
+| `pageSize` | `number` | **Required**. How many items have to be required       |
+| `page`     | `number` | **Required**. Items for which page have to be rendered |
+**Response:**
+
+- Status Code: 200 OK
+- Body: JSON object containing an array of events.
+  ```json
+  {
+    "events": {
+        "count": 1,
+        "rows": [
+            {
+                "id": "<TaskId>",
+                "title": "<TaskTitle>",
+                "description": "<TaskDescr>",
+                "price": "<TaskPrice>",
+                "startLocation": "<TaskStartLoc>",
+                "endLocation": "<TaskEndLoc>",
+                "links": <TaskLinks>[],
+                "image": null,
+                "createdAt": "<TaskCreated>",
+                "updatedAt": "<TaskUpdate>",
+                "userId": "<User>.id"
+            }
+        ]
+    }
+  }
