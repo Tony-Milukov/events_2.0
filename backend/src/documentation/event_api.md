@@ -147,7 +147,7 @@ POST /api/event/getAll
   }
   ```
 
-#### Add User to Event
+#### Accept Join Request
 
 ```http
 PUT /api/event/addMember
