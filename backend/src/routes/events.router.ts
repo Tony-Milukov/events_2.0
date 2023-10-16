@@ -13,7 +13,11 @@ const {
     joinEventRequestController,
     getJoinRequestsController,
     updateEventController,
-    searchEventsByValueController
+    searchEventsByValueController,
+    createDriveController,
+    joinDriveController,
+    deleteDriveController,
+    leaveDriveController
 
 } = require("../controllers/event.controller.ts")
 
@@ -55,5 +59,16 @@ router.post("/getJoined", isAuth, getUserJoinedEventsController)
 
 // gets all events by :value
 router.post("/search/:value", searchEventsByValueController)
+
+// add New driver
+router.put("/driver", isAuth, createDriveController)
+
+// delete driver
+router.post("/driver/delete", isAuth, deleteDriveController)
+
+// join a drive
+router.put("/drive/join", isAuth, joinDriveController)
+
+router.post("/drive/leave", isAuth, leaveDriveController)
 module.exports = router
 export {}

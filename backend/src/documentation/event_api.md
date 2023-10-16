@@ -356,3 +356,97 @@ POST /api/event/search/:value
         ]
     }
   }
+
+
+#### Create new Drive as Driver
+
+  ```http
+PUT /api/event/drive/
+```
+
+| Parameter  | Type     | Description                                            |
+|:-----------|:---------|:-------------------------------------------------------|
+| `eventId`    | `number` | **Required**. The eventId                    |
+| `allSeats` | `number` | **Required**. How many seats are in your car? inclusive driver       |
+| `availableSeats`     | `number` | how many seats are available, (default: allSeats -1 Driver) |
+| `description`     | `string` | **Required** some text, description |
+
+**Response:**
+- Status Code: 200 OK
+- Body: JSON object containing an object of new drive.
+  ```json
+  {
+   "drive": {
+        "id": 3,
+        "eventId": 100,
+        "driveId": 21,
+        "description": "Volvo99",
+        "allSeats": 5,
+        "availableSeats": 4,
+        "updatedAt": "2023-10-16T10:17:51.079Z",
+        "createdAt": "2023-10-16T10:17:51.079Z"
+    }
+  }
+  
+  
+#### Delete Drive as Driver
+
+  ```http
+POST /api/event/drive/delete
+```
+| Parameter  | Type     | Description                                      |
+|:-----------|:---------|:-------------------------------------------------|
+| `eventId`    | `number` | **Required one of params**. The eventId          |
+| `driveId`     | `number` | **Required Required one of params** the drive Id |
+
+
+**Response:**
+- Status Code: 200 OK
+  - Body: JSON object containing an message
+    ```json
+    {
+    "message": 
+        "Successfully deleted a drive possibility for you, you are not offending drive possibilities anymore"
+    }
+    
+#### Join Drive as Member
+###### only if you are the event member!
+  ```http
+PUT /api/event/drive/join
+```
+
+| Parameter  | Type     | Description                                                                      |
+|:-----------|:---------|:---------------------------------------------------------------------------------|
+| `driveId`     | `number` | **Required Required one of params** the drive Id |
+
+
+**Response:**
+- Status Code: 200 OK
+  - Body: JSON object containing an message
+    ```json
+    {
+    "message": 
+        "Successfully joined the drive"
+    }
+
+
+#### Leave the Drive as Member
+###### only if you are the event member!
+
+  ```http
+PUT /api/event/drive/leave
+```
+
+| Parameter  | Type     | Description                                                                      |
+|:-----------|:---------|:---------------------------------------------------------------------------------|
+| `driveId`     | `number` | **Required Required one of params** the drive Id |
+
+
+**Response:**
+- Status Code: 200 OK
+  - Body: JSON object containing an message
+    ```json
+    {
+    "message": 
+        "Successfully leaved the drive"
+    }

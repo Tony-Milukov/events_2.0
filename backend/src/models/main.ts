@@ -4,7 +4,8 @@ const EventMember = require("./eventMember.model.ts")
 const UserRating = require("./user.rating.ts")
 const Role = require("./role.model.ts")
 const JoinEventRequest = require("./joinEventRequest.model.ts")
-
+const EventDrive = require("./event.drive.model.ts")
+const DriveMember = require("./driveMember.model.ts")
 Event.belongsToMany(User, {through: EventMember})
 User.belongsToMany(Event, {through: EventMember})
 
@@ -23,12 +24,25 @@ Event.belongsToMany(User, {through: JoinEventRequest})
 User.hasMany(JoinEventRequest)
 JoinEventRequest.belongsTo(User,{foreignKey: "creatorId"})
 
+EventDrive.belongsTo(Event)
+Event.hasMany(EventDrive)
+
+User.belongsToMany(EventDrive, {through: DriveMember})
+EventDrive.belongsToMany(User, {through: DriveMember})
+
+Event.hasMany(DriveMember)
+DriveMember.belongsTo(Event)
+
+
 module.exports = {
     User,
     Event,
     EventMember,
-    UserRating, Role,
-    JoinEventRequest
+    UserRating,
+    Role,
+    JoinEventRequest,
+    EventDrive,
+    DriveMember
 };
 
 export {};

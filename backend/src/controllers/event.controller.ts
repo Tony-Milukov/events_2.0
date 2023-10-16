@@ -1,7 +1,7 @@
 import {UserInterface} from "../interfaces/user.interface";
+import {canTreatArrayAsAnd} from "sequelize/types/utils";
 
 const apiError = require("../utilits/apiError.ts")
-const {User} = require("../models/main")
 const {bodyValidator, paramValidator} = require("../utilits/validators/request.validator.ts");
 const {
     createEventService,
@@ -15,8 +15,11 @@ const {
     joinEventRequestService,
     getJoinRequestsService,
     updateEventService,
-    searchEventsByValueService
-
+    searchEventsByValueService,
+    createDriveService,
+    deleteDriveService,
+    joinDriveService,
+    leaveDriveService
 } = require("../services/event.service.ts");
 const {verifyUserRoleService} = require("../services/user.service.ts")
 
@@ -159,19 +162,7 @@ const getJoinRequestsController = async (req: any, res: any) => {
     }
 }
 
-const searchEventsByValueController = async (req: any, res: any) => {
-    try {
-        const pageSize = bodyValidator(req, res, 'pageSize');
-        const page = bodyValidator(req, res, 'page');
-        const offset = pageSize * (page === 1 ? 0 : page - 1);
-        const value = paramValidator(req,res, "value")
-        const events = await searchEventsByValueService(page, offset, value)
-        res.json({events}).status(200)
-    } catch (e: any) {
-        console.log(e)
-        apiError(res, e.errorMsg, e.status)
-    }
-}
+
 const updateEventController = async (req: any, res: any) => {
     try {
         const title: string | undefined = req.body.title
@@ -189,6 +180,69 @@ const updateEventController = async (req: any, res: any) => {
         apiError(res, e.errorMsg, e.status)
     }
 }
+
+const searchEventsByValueController = async (req: any, res: any) => {
+    try {
+        const pageSize = bodyValidator(req, res, 'pageSize');
+        const page = bodyValidator(req, res, 'page');
+        const offset = pageSize * (page === 1 ? 0 : page - 1);
+        const value = paramValidator(req, res, "value")
+        const events = await searchEventsByValueService(page, offset, value)
+        res.json({events}).status(200)
+    } catch (e: any) {
+        console.log(e)
+        apiError(res, e.errorMsg, e.status)
+    }
+}
+
+const createDriveController = async (req: any, res: any) => {
+    try {
+        const eventId = bodyValidator(req, req, "eventId") as number;
+        const allSeats = bodyValidator(req, req, "allSeats") as number;
+        const availableSeats = req.body.availableSeats || allSeats - 1;
+        // const userId = bodyValidator(req,req,"userId");
+        const userId = req.user.id
+        const description = bodyValidator(req, req, "description") as string;
+        const drive = await createDriveService(eventId, userId, description, allSeats, availableSeats)
+        res.json({drive}).status(200)
+    } catch (e: any) {
+        console.log(e)
+        apiError(res, e.errorMsg, e.status)
+    }
+}
+const deleteDriveController = async (req: any, res: any) => {
+    try {
+        const eventId = req.body.eventId as number | undefined;
+        const userId = req.user.id as number
+        const driveId = req.body.driveId as number | undefined
+        await deleteDriveService(eventId, userId, driveId)
+        res.json({message: "Successfully deleted a drive possibility for you, you are not offending drive possibilities anymore"}).status(200)
+    } catch (e: any) {
+        apiError(res, e.errorMsg, e.status)
+    }
+}
+
+const joinDriveController = async (req: any, res: any) => {
+    try {
+
+        const driveId = bodyValidator(req, res, "driveId")
+        const user = req.user
+        await joinDriveService(driveId, user)
+        res.json({message: "You successfully joined the drive!"}).status(200)
+    } catch (e: any) {
+        apiError(res, e.errorMsg, e.status)
+    }
+}
+const leaveDriveController = async (req: any, res: any) => {
+    try {
+        const driveId = bodyValidator(req, res, "driveId")
+        const user = req.user
+        await leaveDriveService(driveId, user)
+        res.json({message: "You sucessfully left the drive!"}).status(200)
+    } catch (e: any) {
+        apiError(res, e.errorMsg, e.status)
+    }
+}
 module.exports = {
     createEventController,
     deleteEventByIdController,
@@ -201,7 +255,12 @@ module.exports = {
     joinEventRequestController,
     getJoinRequestsController,
     updateEventController,
-    searchEventsByValueController
+    searchEventsByValueController,
+    createDriveController,
+    joinDriveController,
+    deleteDriveController,
+    leaveDriveController
+
 }
 
 export {}

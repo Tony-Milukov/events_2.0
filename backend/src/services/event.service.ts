@@ -4,10 +4,10 @@ import {RoleInterface} from "../interfaces/role.interface";
 import {Op} from "sequelize";
 
 const sharp = require('sharp');
-const {User, Event, EventMember, JoinEventRequest} = require("../models/main.ts")
+const {User, Event, EventMember, JoinEventRequest, EventDrive, DriveMember} = require("../models/main.ts")
 const {getUserByIdService, verifyUserRoleService} = require("./user.service.ts")
 
-const findEventByPk = async (eventId:number) => {
+const findEventByPk = async (eventId: number) => {
     const event = await Event.findByPk(eventId)
     if (!event) {
         throw {errorMsg: "event with that eventId was not defined", status: 404}
@@ -25,15 +25,15 @@ const createEventService = async (title: string, description: string, price: num
         links,
         userId: user.id
     })
-   if(files && files.image && files.image.data) {
-       await sharp(files.image.data)
-           .webp({quality: 80})
-           .toFile(`src/public/events/${event.dataValues.id}.webp`)
+    if (files && files.image && files.image.data) {
+        await sharp(files.image.data)
+            .webp({quality: 80})
+            .toFile(`src/public/events/${event.dataValues.id}.webp`)
 
-       await event.update({
-           image: `${event.dataValues.id}.webp`
-       })
-   }
+        await event.update({
+            image: `${event.dataValues.id}.webp`
+        })
+    }
     if (!event) {
         throw {errorMsg: "something went wrong on creating an event", status: 400}
     }
@@ -47,7 +47,6 @@ const getEventByIdService = async (eventId: number | string) => {
         //getting data about eventMembers
         include: [{model: User, through: EventMember}]
     })
-
     if (!event) {
         throw {errorMsg: "event with that eventId was not defined", status: 404}
     } else {
@@ -112,7 +111,6 @@ const addUserToEventService = async (user: UserInterface, joinRequestId: number,
     const newMemberUser = await User.findByPk(joinEventRequest.dataValues.userId)
 
 
-
     //check if the user from JWT is the creator from the event
     //or is the user from JWT an ADMIN
 
@@ -150,7 +148,7 @@ const joinEventRequestService = async (userId: number, eventId: number) => {
     return
 }
 
-const getJoinRequestsService = async (roles: RoleInterface[],userId: number,  eventId?: number | undefined | null) => {
+const getJoinRequestsService = async (roles: RoleInterface[], userId: number, eventId?: number | undefined | null) => {
     //check if admin, then don't proof if user is event creator
     if (verifyUserRoleService(roles, "ADMIN") && eventId) {
         return await JoinEventRequest.findAll({
@@ -158,8 +156,7 @@ const getJoinRequestsService = async (roles: RoleInterface[],userId: number,  ev
                 eventId
             }
         })
-    }
-    else {
+    } else {
         return await JoinEventRequest.findAll({
             where: {
                 creatorId: userId,
@@ -168,7 +165,7 @@ const getJoinRequestsService = async (roles: RoleInterface[],userId: number,  ev
         })
     }
 }
-const updateEventService = async (eventId: number,title: string | undefined, price: number | undefined, description: string | undefined, startLocation: string | undefined, endLocation: string | undefined, links: JSON, files: any) => {
+const updateEventService = async (eventId: number, title: string | undefined, price: number | undefined, description: string | undefined, startLocation: string | undefined, endLocation: string | undefined, links: JSON, files: any) => {
     //if nothing to update
     if (
         title === undefined &&
@@ -183,7 +180,7 @@ const updateEventService = async (eventId: number,title: string | undefined, pri
     }
 
     const event = await findEventByPk(eventId)
-    if(files && files.image && files.image.data) {
+    if (files && files.image && files.image.data) {
         await sharp(files.image.data)
             .webp({quality: 80})
             .toFile(`src/public/events/${event.dataValues.id}.webp`)
@@ -202,16 +199,132 @@ const updateEventService = async (eventId: number,title: string | undefined, pri
         ...(files && files.image ? {image: `${event.dataValues.id}.webp`} : {}),
     })
 }
-const searchEventsByValueService = async (limit:number, offset:number, value:string) => {
-  return await Event.findAndCountAll({
+const searchEventsByValueService = async (limit: number, offset: number, value: string) => {
+    return await Event.findAndCountAll({
         limit,
         offset,
-      where:{
-          title: {
-              [Op.like]: `%${value}%`
-          }
-      }
+        where: {
+            title: {
+                [Op.like]: `%${value}%`
+            }
+        }
     })
+}
+const isUserMemberOfEvent = async (eventId: number, userId: number) => {
+    const isUserMemberOfEvent = await EventMember.findOne({
+        where: {
+            eventId,
+            userId
+        }
+    })
+    if (!isUserMemberOfEvent) {
+        throw {errorMsg: "Driver with that userId is not a member of that event!", status: 404}
+    }
+
+}
+const createDriveService = async (eventId: number, userId: number, description: string, allSeats: number, availableSeats: number) => {
+    await getEventByIdService(eventId)
+    await isUserMemberOfEvent(eventId, userId)
+    const doDriverExist = await EventDrive.findOne({
+        where: {
+            driverId: userId,
+            eventId
+        }
+    })
+    if (doDriverExist) {
+        throw {errorMsg: "Driver with that userId already exists in that event!", status: 404}
+    }
+    return await EventDrive.create({
+        eventId,
+        driverId: userId,
+        description,
+        allSeats,
+        availableSeats
+    })
+
+}
+const getDriveByIdService = async (driveId: number) => {
+    const eventDrive = await EventDrive.findByPk(driveId)
+
+    if (!eventDrive) {
+        throw {errorMsg: "Event Drive with that eventId was undefined", status: 404}
+    } else {
+        return eventDrive
+    }
+}
+
+const getDriveEventAndUser = async (eventId: number, userId: number) => {
+    const eventDrive = await EventDrive.findOne({
+        where: {
+            driverId: userId,
+            eventId
+        }
+    })
+
+    if (!eventDrive) {
+        throw {errorMsg: "Event Drive with that eventId and UserId was undefined", status: 404}
+    } else {
+        return eventDrive
+    }
+}
+
+const deleteDriveService = async (eventId: number | undefined, userId: number | undefined, driveId: number) => {
+    if (eventId && userId) {
+        await getDriveEventAndUser(eventId, userId)
+        await EventDrive.destroy({
+            where: {
+                eventId,
+                driverId: userId,
+            }
+        })
+    } else if (driveId) {
+        await getDriveByIdService(driveId)
+        await EventDrive.destroy({
+            where: {
+                id: driveId
+            }
+        })
+    } else {
+        throw {errorMsg: "You have to send eventId or driveId!"}
+    }
+}
+
+const joinDriveService = async (driveId: number | undefined, user: any) => {
+    if (driveId) {
+        const eventDrive = await getDriveByIdService(driveId)
+        const eventMember = await DriveMember.findOne({
+            where: {
+                eventId: eventDrive.eventId,
+                userId: user.id
+            }
+        })
+        if (eventMember) {
+            throw {errorMsg: `You already joined the drive with id: ${driveId}`}
+        } else {
+            const driveMember = await eventDrive.addUser(user)
+            await driveMember[0].update({
+               eventId: eventDrive.eventId
+            })
+           return driveMember
+        }
+    }
+}
+
+const leaveDriveService = async (driveId: number | undefined, user: any) => {
+    if (driveId) {
+        const eventDrive = await getDriveByIdService(driveId)
+        const eventMember = await DriveMember.findOne({
+            where: {
+                eventId: eventDrive.eventId,
+                userId: user.id
+            }
+        })
+        if (eventMember) {
+           await eventDrive.removeUser(user)
+        } else {
+            throw {errorMsg: `You have not joined the drive with id: ${driveId}`}
+        }
+    }
 }
 module.exports = {
     createEventService,
@@ -225,7 +338,11 @@ module.exports = {
     joinEventRequestService,
     getJoinRequestsService,
     updateEventService,
-    searchEventsByValueService
+    searchEventsByValueService,
+    createDriveService,
+    deleteDriveService,
+    joinDriveService,
+    leaveDriveService
 }
 export {}
 
