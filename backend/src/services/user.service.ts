@@ -65,6 +65,7 @@ const getTokenService = (req: any) => {
 const decodeJwtService = (token: string) =>
     jwt.verify(token, process.env.SECRET, (err: any, decoded: any) => {
             if (err) {
+                console.log(err)
                 return false;
             }
             return decoded;
