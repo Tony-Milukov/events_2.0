@@ -205,7 +205,7 @@ const searchEventsByValueService = async (limit: number, offset: number, value: 
         offset,
         where: {
             title: {
-                [Op.like]: `%${value}%`
+                [Op.iLike]: `%${value}%`
             }
         }
     })
