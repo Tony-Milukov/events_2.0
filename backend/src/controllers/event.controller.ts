@@ -55,7 +55,7 @@ const getEventByIdController = async (req: any, res: any) => {
         if(decodedJwt) {
             const userMemberOfEvent:boolean = await isUserMemberOfEventService(decodedJwt.userId, eventId)
             const userRequestedJoin:boolean = await didUserRequestedJoinService(decodedJwt.userId, eventId)
-            res.json({event, userMemberOfEvent, userRequestedJoin}).status(200)
+            res.json({event: {...event, userMemberOfEvent, userRequestedJoin}}).status(200)
         } else {
             res.json({event}).status(200)
         }
