@@ -292,7 +292,7 @@ const deleteDriveService = async (eventId: number | undefined, userId: number | 
     }
 }
 
-const joinDriveService = async (driveId: number | undefined, user: any) => {
+const joinDriveService = async (driveId: number | undefined, user: any):Promise<any> => {
     if (driveId) {
         const eventDrive = await getDriveByIdService(driveId)
         const eventMember = await DriveMember.findOne({
@@ -313,7 +313,7 @@ const joinDriveService = async (driveId: number | undefined, user: any) => {
     }
 }
 
-const leaveDriveService = async (driveId: number | undefined, user: any) => {
+const leaveDriveService = async (driveId: number | undefined, user: any):Promise<void> => {
     if (driveId) {
         const eventDrive = await getDriveByIdService(driveId)
         const eventMember = await DriveMember.findOne({
@@ -337,6 +337,26 @@ const getDrivesService = async (eventId: number, user: any) => {
         }
     })
 }
+
+const isUserMemberOfEventService = async (userId: number, eventId: number):Promise<boolean> => {
+    const events = await EventMember.findAll({
+        where: {
+            userId,
+            eventId
+        }
+    })
+    return events.length > 0
+}
+const didUserRequestedJoinService = async (userId: number, eventId: number):Promise<boolean> => {
+    const joinRequests = await JoinEventRequest.findAll({
+        where: {
+            userId,
+            eventId
+        }
+    })
+
+    return joinRequests.length > 0
+}
 module.exports = {
     createEventService,
     getEventByIdService,
@@ -354,7 +374,9 @@ module.exports = {
     deleteDriveService,
     joinDriveService,
     leaveDriveService,
-    getDrivesService
+    getDrivesService,
+    didUserRequestedJoinService,
+    isUserMemberOfEventService
 }
 export {}
 

@@ -19,9 +19,11 @@ const {
     deleteDriveService,
     joinDriveService,
     leaveDriveService,
-    getDrivesService
+    getDrivesService,
+    didUserRequestedJoinService,
+    isUserMemberOfEventService
 } = require("../services/event.service.ts");
-const {verifyUserRoleService} = require("../services/user.service.ts")
+const {verifyUserRoleService, getTokenService, decodeJwtService} = require("../services/user.service.ts")
 
 const createEventController = async (req: any, res: any) => {
     try {
@@ -46,7 +48,19 @@ const getEventByIdController = async (req: any, res: any) => {
     try {
         const eventId: number = paramValidator(req, res, "eventId");
         const event = await getEventByIdService(eventId)
-        res.json({event}).status(200)
+
+        const token = await getTokenService(req)
+        const decodedJwt = await decodeJwtService(token)
+
+        if(decodedJwt) {
+            const userMemberOfEvent:boolean = await isUserMemberOfEventService(decodedJwt.userId, eventId)
+            const userRequestedJoin:boolean = await didUserRequestedJoinService(decodedJwt.userId, eventId)
+            res.json({event, userMemberOfEvent, userRequestedJoin}).status(200)
+        } else {
+            res.json({event}).status(200)
+        }
+
+
     } catch (e: any) {
         console.log(e)
         apiError(res, e.errorMsg, e.status)
@@ -247,7 +261,7 @@ const getDrivesController = async (req: any, res: any) => {
     try {
         const eventId = bodyValidator(req, res, "eventId")
         const user = req.user
-       const  drives =  await getDrivesService(eventId)
+        const  drives =  await getDrivesService(eventId)
         res.json({drives}).status(200)
     } catch (e: any) {
         apiError(res, e.errorMsg, e.status)
