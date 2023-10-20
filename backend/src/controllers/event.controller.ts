@@ -46,10 +46,11 @@ const createEventController = async (req: any, res: any) => {
 }
 const getEventByIdController = async (req: any, res: any) => {
     try {
-        const eventId: number = paramValidator(req, res, "eventId");
+        const eventId: number = paramValidator(req, res, "eventId") as number;
         const event = await getEventByIdService(eventId)
 
         const token = await getTokenService(req)
+        console.log(token)
         const decodedJwt = await decodeJwtService(token)
 
         if(decodedJwt) {
