@@ -157,12 +157,17 @@ const getJoinRequestsService = async (roles: RoleInterface[], userId: number, ev
             }
         })
     } else {
-        return await JoinEventRequest.findAll({
+        const joinRequest = await JoinEventRequest.findAll({
             where: {
                 creatorId: userId,
                 ...(eventId ? {eventId} : {})
             }
         })
+
+        const event = await Event.findByPk(joinRequest.eventId)
+        const user = await User.findByPk(joinRequest.userId)
+
+        return {...joinRequest, user, event}
     }
 }
 const updateEventService = async (eventId: number, title: string | undefined, price: number | undefined, description: string | undefined, startLocation: string | undefined, endLocation: string | undefined, links: JSON, files: any) => {

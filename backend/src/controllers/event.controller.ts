@@ -206,7 +206,6 @@ const createDriveController = async (req: any, res: any) => {
         const drive = await createDriveService(eventId, userId, description, allSeats, availableSeats)
         res.json({drive}).status(200)
     } catch (e: any) {
-        console.log(e)
         apiError(res, e.errorMsg, e.status)
     }
 }
