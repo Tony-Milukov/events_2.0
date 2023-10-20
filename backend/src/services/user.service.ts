@@ -3,7 +3,7 @@ import {RoleInterface} from "../interfaces/role.interface";
 
 
 const sequelize = require("sequelize")
-const {User, UserRating} = require("../models/main.ts")
+const {User, UserRating, Role} = require("../models/main.ts")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const v4 = require("uuid").v4
@@ -92,7 +92,9 @@ const getUserRatingService = async (userId: number) => {
 }
 
 const getUserByIdService = async (userId: number) => {
-    const user = await User.findByPk(userId);
+    const user = await User.findByPk(userId, {
+    attributes: {exclude: ["updatedAt", "createdAt","password", "joinEventRequest"]}
+    });
     const userRating = await getUserRatingService(userId)
     if (!user) {
         throw {errorMsg: "Sorry, user with that userId was not defined", status: 404}

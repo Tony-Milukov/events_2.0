@@ -40,7 +40,6 @@ const createEventController = async (req: any, res: any) => {
         const event = await createEventService(title, description, price, user, endLocation, startLocation, links, files);
         res.json({message: "Event was created successfully!", eventId: event.id}).status(200)
     } catch (e: any) {
-        console.log(e)
         apiError(res, e.errorMsg, e.status)
     }
 }
@@ -50,15 +49,11 @@ const getEventByIdController = async (req: any, res: any) => {
         const event = await getEventByIdService(eventId)
 
         const token = await getTokenService(req)
-        console.log(token)
         const decodedJwt = await decodeJwtService(token)
-        console.log(decodedJwt)
+
         if(decodedJwt) {
-            console.log("blabla")
             const userMemberOfEvent:boolean = await isUserMemberOfEventService(decodedJwt.userId, eventId)
-            console.log("userMemberOfEvent" +  userMemberOfEvent)
             const userRequestedJoin:boolean = await didUserRequestedJoinService(decodedJwt.userId, eventId)
-            console.log("userRequestedJoin" + userRequestedJoin)
             res.json({event: {...event, userMemberOfEvent, userRequestedJoin}}).status(200)
         } else {
             res.json({event}).status(200)
@@ -66,7 +61,6 @@ const getEventByIdController = async (req: any, res: any) => {
 
 
     } catch (e: any) {
-        console.log(e)
         apiError(res, e.errorMsg, e.status)
     }
 }
@@ -209,7 +203,6 @@ const searchEventsByValueController = async (req: any, res: any) => {
         const events = await searchEventsByValueService(page, offset, value)
         res.json({events}).status(200)
     } catch (e: any) {
-        console.log(e)
         apiError(res, e.errorMsg, e.status)
     }
 }

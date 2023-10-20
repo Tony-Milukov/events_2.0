@@ -45,7 +45,13 @@ const getEventByIdService = async (eventId: number | string) => {
             id: eventId
         },
         //getting data about eventMembers
-        include: [{model: User, through: EventMember}]
+        include: [
+            {
+                model: User,
+                through: EventMember,
+                attributes: {exclude: ["roles", "updatedAt", "createdAt", "password", "joinEventRequest"]}
+            }
+        ]
     })
     if (!event) {
         throw {errorMsg: "event with that eventId was not defined", status: 404}
@@ -162,8 +168,7 @@ const getJoinRequestsService = async (roles: RoleInterface[], userId: number, ev
                 creatorId: userId,
                 ...(eventId ? {eventId} : {})
             },
-            include: [Event, User]
-
+            include: [{model: Event, attributes: ["title"]}, {model: User, attributes: ["username", "email"]}]
         })
         return joinRequest
     }
@@ -292,7 +297,7 @@ const deleteDriveService = async (eventId: number | undefined, userId: number | 
     }
 }
 
-const joinDriveService = async (driveId: number | undefined, user: any):Promise<any> => {
+const joinDriveService = async (driveId: number | undefined, user: any): Promise<any> => {
     if (driveId) {
         const eventDrive = await getDriveByIdService(driveId)
         const eventMember = await DriveMember.findOne({
@@ -313,7 +318,7 @@ const joinDriveService = async (driveId: number | undefined, user: any):Promise<
     }
 }
 
-const leaveDriveService = async (driveId: number | undefined, user: any):Promise<void> => {
+const leaveDriveService = async (driveId: number | undefined, user: any): Promise<void> => {
     if (driveId) {
         const eventDrive = await getDriveByIdService(driveId)
         const eventMember = await DriveMember.findOne({
@@ -338,7 +343,7 @@ const getDrivesService = async (eventId: number, user: any) => {
     })
 }
 
-const isUserMemberOfEventService = async (userId: number, eventId: number):Promise<boolean> => {
+const isUserMemberOfEventService = async (userId: number, eventId: number): Promise<boolean> => {
     const events = await EventMember.findAll({
         where: {
             userId,
@@ -347,7 +352,7 @@ const isUserMemberOfEventService = async (userId: number, eventId: number):Promi
     })
     return events.length > 0
 }
-const didUserRequestedJoinService = async (userId: number, eventId: number):Promise<boolean> => {
+const didUserRequestedJoinService = async (userId: number, eventId: number): Promise<boolean> => {
     const joinRequests = await JoinEventRequest.findAll({
         where: {
             userId,
