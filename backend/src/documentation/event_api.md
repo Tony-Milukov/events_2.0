@@ -444,7 +444,7 @@ PUT /api/event/drive/join
 
 | Parameter  | Type     | Description                                                                      |
 |:-----------|:---------|:---------------------------------------------------------------------------------|
-| `driveId`     | `number` | **Required Required one of params** the drive Id |
+| `driveId`     | `number` | **Required** the drive Id |
 
 
 **Response:**
@@ -466,7 +466,7 @@ PUT /api/event/drive/leave
 
 | Parameter  | Type     | Description                                                                      |
 |:-----------|:---------|:---------------------------------------------------------------------------------|
-| `driveId`     | `number` | **Required Required one of params** the drive Id |
+| `driveId`     | `number` | **Required** the drive Id |
 
 
 **Response:**
@@ -477,3 +477,34 @@ PUT /api/event/drive/leave
     "message": 
         "Successfully leaved the drive"
     }
+    
+#### Get All drives for an event
+###### only if you are the event member!
+
+  ```http
+POST /api/event/drive
+```
+
+| Parameter | Type     | Description                                                                     |
+|:----------|:---------|:--------------------------------------------------------------------------------|
+| `eventId` | `number` | **Required** the drive Id                                                       |
+
+
+**Response:**
+- Status Code: 200 OK
+  - Body: JSON object containing an message
+    ```json
+    {
+     "drivers": [
+        {
+            "id": <driveId>,
+            "driverId":  <userId>,
+            "description":  <some description>,
+            "allSeats":  <all seats>,
+            "availableSeats":  <avaliable seats>,
+            "createdAt":  <createdAt>,
+            "updatedAt":  <updatedAt>,
+            "eventId": <eventId>
+        }
+    ]
+}

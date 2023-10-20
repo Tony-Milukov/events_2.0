@@ -329,6 +329,14 @@ const leaveDriveService = async (driveId: number | undefined, user: any) => {
         }
     }
 }
+const getDrivesService = async (eventId: number, user: any) => {
+    await getEventByIdService(eventId)
+    return await EventDrive.findAll({
+        where: {
+            eventId
+        }
+    })
+}
 module.exports = {
     createEventService,
     getEventByIdService,
@@ -345,7 +353,8 @@ module.exports = {
     createDriveService,
     deleteDriveService,
     joinDriveService,
-    leaveDriveService
+    leaveDriveService,
+    getDrivesService
 }
 export {}
 

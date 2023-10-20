@@ -1,5 +1,4 @@
 import {UserInterface} from "../interfaces/user.interface";
-import {canTreatArrayAsAnd} from "sequelize/types/utils";
 
 const apiError = require("../utilits/apiError.ts")
 const {bodyValidator, paramValidator} = require("../utilits/validators/request.validator.ts");
@@ -19,7 +18,8 @@ const {
     createDriveService,
     deleteDriveService,
     joinDriveService,
-    leaveDriveService
+    leaveDriveService,
+    getDrivesService
 } = require("../services/event.service.ts");
 const {verifyUserRoleService} = require("../services/user.service.ts")
 
@@ -243,6 +243,16 @@ const leaveDriveController = async (req: any, res: any) => {
         apiError(res, e.errorMsg, e.status)
     }
 }
+const getDrivesController = async (req: any, res: any) => {
+    try {
+        const eventId = bodyValidator(req, res, "eventId")
+        const user = req.user
+       const  drives =  await getDrivesService(eventId)
+        res.json({drives}).status(200)
+    } catch (e: any) {
+        apiError(res, e.errorMsg, e.status)
+    }
+}
 module.exports = {
     createEventController,
     deleteEventByIdController,
@@ -259,7 +269,8 @@ module.exports = {
     createDriveController,
     joinDriveController,
     deleteDriveController,
-    leaveDriveController
+    leaveDriveController,
+    getDrivesController
 
 }
 
