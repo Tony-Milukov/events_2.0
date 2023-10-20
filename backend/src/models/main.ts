@@ -22,7 +22,7 @@ User.belongsToMany(Event, {through: JoinEventRequest})
 Event.belongsToMany(User, {through: JoinEventRequest})
 
 User.hasMany(JoinEventRequest)
-JoinEventRequest.belongsTo(User,{foreignKey: "userId"})
+JoinEventRequest.belongsTo(User,{foreignKey: "creatorId"})
 
 Event.hasMany(JoinEventRequest)
 JoinEventRequest.belongsTo(Event,{foreignKey: "eventId"})

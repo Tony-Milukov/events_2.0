@@ -212,7 +212,7 @@ const createDriveController = async (req: any, res: any) => {
         const eventId = bodyValidator(req, req, "eventId") as number;
         const allSeats = bodyValidator(req, req, "allSeats") as number;
         const availableSeats = req.body.availableSeats || allSeats - 1;
-        // const userId = bodyValidator(req,req,"userId");
+
         const userId = req.user.id
         const description = bodyValidator(req, req, "description") as string;
         const drive = await createDriveService(eventId, userId, description, allSeats, availableSeats)
@@ -257,7 +257,6 @@ const leaveDriveController = async (req: any, res: any) => {
 const getDrivesController = async (req: any, res: any) => {
     try {
         const eventId = bodyValidator(req, res, "eventId")
-        const user = req.user
         const  drives =  await getDrivesService(eventId)
         res.json({drives}).status(200)
     } catch (e: any) {

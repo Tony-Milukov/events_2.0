@@ -277,6 +277,8 @@ const getDriveEventAndUser = async (eventId: number, userId: number) => {
 }
 
 const deleteDriveService = async (eventId: number | undefined, userId: number | undefined, driveId: number) => {
+
+    // if event Id and userId was give, destroy the drive by it
     if (eventId && userId) {
         await getDriveEventAndUser(eventId, userId)
         await EventDrive.destroy({

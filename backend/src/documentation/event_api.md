@@ -478,7 +478,7 @@ POST /api/event/drive
   - Body: JSON object containing an message
     ```json
     {
-     "drivers": [
+     "drives": [
         {
             "id": <driveId>,
             "driverId":  <userId>,
