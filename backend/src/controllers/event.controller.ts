@@ -52,10 +52,13 @@ const getEventByIdController = async (req: any, res: any) => {
         const token = await getTokenService(req)
         console.log(token)
         const decodedJwt = await decodeJwtService(token)
-
+        console.log(decodedJwt)
         if(decodedJwt) {
+            console.log("blabla")
             const userMemberOfEvent:boolean = await isUserMemberOfEventService(decodedJwt.userId, eventId)
+            console.log("userMemberOfEvent" +  userMemberOfEvent)
             const userRequestedJoin:boolean = await didUserRequestedJoinService(decodedJwt.userId, eventId)
+            console.log("userRequestedJoin" + userRequestedJoin)
             res.json({event: {...event, userMemberOfEvent, userRequestedJoin}}).status(200)
         } else {
             res.json({event}).status(200)
@@ -253,7 +256,7 @@ const leaveDriveController = async (req: any, res: any) => {
         const driveId = bodyValidator(req, res, "driveId")
         const user = req.user
         await leaveDriveService(driveId, user)
-        res.json({message: "You sucessfully left the drive!"}).status(200)
+        res.json({message: "You successfully left the drive!"}).status(200)
     } catch (e: any) {
         apiError(res, e.errorMsg, e.status)
     }
