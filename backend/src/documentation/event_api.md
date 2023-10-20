@@ -84,7 +84,9 @@ GET /api/event/getById/:eventId
         "email": "<Email>",
         "roles": [ "<Role 1>", "<Role 2>", ... ]
       },
-      "users": [ "<User 1>", "<User 2>", ... ]
+      "users": [ "<User 1>", "<User 2>", ... ],
+      "userMemberOfEvent": <boolean>
+      "userRequestedJoin": <boolean>
     }
   }
   ```
