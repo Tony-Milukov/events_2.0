@@ -202,20 +202,47 @@ POST /api/event/getJoinRequests
 **Response:**
 
 - Status Code: 200 OK
-- Body: JSON object containing an array of join requests.
-  ```json
-  {
+  - Body: JSON object containing an array of join requests.
+    ```json
+    {
     "requests": [
-      {
-        "id": "<Request ID>",
-        "userId": "<User ID>",
-        "eventId": "<Event ID>",
-        "status": "<Request Status>"
-      },
-      // Additional Request Objects
-    ]
-  }
-  ```
+        {
+            "id": 26,
+            "status": false,
+            "createdAt": "2023-10-17T07:28:17.198Z",
+            "updatedAt": "2023-10-20T06:21:51.727Z",
+            "userId": 3,
+            "eventId": 102,
+            "creatorId": 3,
+            "event": {
+                "id": 102,
+                "title": "Test",
+                "description": "test",
+                "price": 100,
+                "startLocation": "test",
+                "endLocation": "test",
+                "links": "[\"test.com\"]",
+                "image": null,
+                "createdAt": "2023-10-17T07:28:08.757Z",
+                "updatedAt": "2023-10-17T07:28:08.757Z",
+                "userId": 3
+            },
+            "user": {
+                "id": 3,
+                "email": "asd",
+                "username": "romeo_oltean",
+                "password": "$2b$09$Q95vuWaYX8Y.p/jNM32meewCq/hlLBflhZsx2ZTQ0rlYFajj2EAEy",
+                "verified": null,
+                "image": "3.webp",
+                "description": "I am a java dev!",
+                "createdAt": "2023-09-18T10:23:37.740Z",
+                "updatedAt": "2023-10-20T06:11:02.135Z"
+            }
+        },
+        // Additional Request Objects
+      ]
+    }
+    ```
 
 #### Get User Events
 

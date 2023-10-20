@@ -158,6 +158,7 @@ const getJoinRequestsController = async (req: any, res: any) => {
 
         res.json({requests: eventRequests}).status(200)
     } catch (e: any) {
+        console.log(e)
         apiError(res, e.errorMsg, e.status)
     }
 }

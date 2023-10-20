@@ -24,6 +24,10 @@ Event.belongsToMany(User, {through: JoinEventRequest})
 User.hasMany(JoinEventRequest)
 JoinEventRequest.belongsTo(User,{foreignKey: "creatorId"})
 
+Event.hasMany(JoinEventRequest)
+JoinEventRequest.belongsTo(Event,{foreignKey: "eventId"})
+
+
 EventDrive.belongsTo(Event)
 Event.hasMany(EventDrive)
 

@@ -161,13 +161,11 @@ const getJoinRequestsService = async (roles: RoleInterface[], userId: number, ev
             where: {
                 creatorId: userId,
                 ...(eventId ? {eventId} : {})
-            }
+            },
+            include: [Event, User]
+
         })
-
-        const event = await Event.findByPk(joinRequest.eventId)
-        const user = await User.findByPk(joinRequest.userId)
-
-        return {...joinRequest, user, event}
+        return joinRequest
     }
 }
 const updateEventService = async (eventId: number, title: string | undefined, price: number | undefined, description: string | undefined, startLocation: string | undefined, endLocation: string | undefined, links: JSON, files: any) => {
@@ -308,9 +306,9 @@ const joinDriveService = async (driveId: number | undefined, user: any) => {
         } else {
             const driveMember = await eventDrive.addUser(user)
             await driveMember[0].update({
-               eventId: eventDrive.eventId
+                eventId: eventDrive.eventId
             })
-           return driveMember
+            return driveMember
         }
     }
 }
@@ -325,7 +323,7 @@ const leaveDriveService = async (driveId: number | undefined, user: any) => {
             }
         })
         if (eventMember) {
-           await eventDrive.removeUser(user)
+            await eventDrive.removeUser(user)
         } else {
             throw {errorMsg: `You have not joined the drive with id: ${driveId}`}
         }
