@@ -258,8 +258,9 @@ const leaveDriveController = async (req: any, res: any) => {
 const getDrivesController = async (req: any, res: any) => {
     try {
         const eventId = bodyValidator(req, res, "eventId")
-        const  drives =  await getDrivesService(eventId)
-        res.json({drives}).status(200)
+        const user = req.user
+        const  drives =  await getDrivesService(eventId, user)
+        res.json(drives).status(200)
     } catch (e: any) {
         console.log(e)
         apiError(res, e.errorMsg, e.status)

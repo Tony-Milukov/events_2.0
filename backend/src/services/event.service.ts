@@ -15,7 +15,7 @@ const findEventByPk = async (eventId: number) => {
     return event
 }
 
-const createEventService = async (title: string, description: string, price: number, user: any, endLocation: string, startLocation: string | null, links: JSON | null, files: any) => {
+const createEventService = async (title: string, description: string, price: number, user: UserInterface, endLocation: string, startLocation: string | null, links: JSON | null, files: any) => {
     const event = await Event.create({
         title,
         description,
@@ -132,7 +132,7 @@ const getEventMembersService = async (eventId: any) => {
 
     return await event.getUsers()
 }
-const getUserEventsService = async (user: any) => {
+const getUserEventsService = async (user: UserInterface) => {
     return await Event.findAndCountAll({
         where: {
             userId: user.id
@@ -304,7 +304,7 @@ const deleteDriveService = async (eventId: number | undefined, userId: number | 
     }
 }
 
-const joinDriveService = async (driveId: number | undefined, user: any): Promise<any> => {
+const joinDriveService = async (driveId: number | undefined, user: UserInterface): Promise<any> => {
     if (driveId) {
         const eventDrive = await getDriveByIdService(driveId)
         const eventMember = await DriveMember.findOne({
@@ -329,7 +329,7 @@ const joinDriveService = async (driveId: number | undefined, user: any): Promise
     }
 }
 
-const leaveDriveService = async (driveId: number | undefined, user: any): Promise<void> => {
+const leaveDriveService = async (driveId: number | undefined, user: UserInterface): Promise<void> => {
     if (driveId) {
         const eventDrive = await getDriveByIdService(driveId)
         const eventMember = await DriveMember.findOne({
@@ -345,14 +345,30 @@ const leaveDriveService = async (driveId: number | undefined, user: any): Promis
         }
     }
 }
-const getDrivesService = async (eventId: number, user: any) => {
+const getDrivesService = async (eventId: number, user: UserInterface) => {
     await getEventByIdService(eventId)
-    return await EventDrive.findAll({
+    const drives =  await EventDrive.findAll({
         where: {
             eventId
         },
         include: [{model: User, attributes: {exclude: ["password", "updatedAt"]}, as: "driver"}]
     })
+    const joinedDrive = await DriveMember.findOne({
+        where: {
+            eventId,
+            userId: user.id
+        }
+    })
+    console.log(joinedDrive)
+    console.log({
+        eventId,
+        userId: user.id
+    })
+
+    return {
+        joinedDrive,
+        drives
+    }
 }
 
 const isUserMemberOfEventService = async (userId: number, eventId: number): Promise<boolean> => {
