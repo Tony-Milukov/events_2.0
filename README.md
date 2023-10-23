@@ -36,9 +36,9 @@ The documentation for this application is created using **Markdown** language an
 
 ### Structure
 
-- **Event API Documentation:** Detailed information about event-related APIs can be found in [`event_api.md`](backend/documentation/event_api.md).
-- **Role API Documentation:** Details about user roles management APIs are provided in [`role_api.md`](backend/documentation/role_api.md).
-- **User API Documentation:** Information regarding user management, authentication, and rating APIs is available in [`user_api.md`](backend/documentation/user_api.md).
+- **Event API Documentation:** Detailed information about event-related APIs can be found in [`event_api.md`](backend/src/documentation/event_api.md).
+- **Role API Documentation:** Details about user roles management APIs are provided in [`role_api.md`](backend/src/documentation/roles_api.md).
+- **User API Documentation:** Information regarding user management, authentication, and rating APIs is available in [`user_api.md`](backend/src/documentation/user_api.md).
 
 ### Editing and Updates
 
