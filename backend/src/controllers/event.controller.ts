@@ -261,6 +261,7 @@ const getDrivesController = async (req: any, res: any) => {
         const  drives =  await getDrivesService(eventId)
         res.json({drives}).status(200)
     } catch (e: any) {
+        console.log(e)
         apiError(res, e.errorMsg, e.status)
     }
 }

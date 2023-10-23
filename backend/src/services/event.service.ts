@@ -160,17 +160,22 @@ const getJoinRequestsService = async (roles: RoleInterface[], userId: number, ev
         return await JoinEventRequest.findAll({
             where: {
                 eventId
-            }
+            },
+            include: [{model: Event, attributes: {exclude: ["description"]}}, {
+                model: User,
+                attributes: {exclude: ["password"]}
+            }]
+
         })
     } else {
-        const joinRequest = await JoinEventRequest.findAll({
+        return await JoinEventRequest.findAll({
             where: {
                 creatorId: userId,
                 ...(eventId ? {eventId} : {})
             },
-            include: [{model: Event, attributes: ["title"]}, {model: User, attributes: ["username", "email"]}]
+            include: [Event, User]
         })
-        return joinRequest
+
     }
 }
 const updateEventService = async (eventId: number, title: string | undefined, price: number | undefined, description: string | undefined, startLocation: string | undefined, endLocation: string | undefined, links: JSON, files: any) => {
@@ -341,7 +346,8 @@ const getDrivesService = async (eventId: number, user: any) => {
     return await EventDrive.findAll({
         where: {
             eventId
-        }
+        },
+        include: [{model: User, attributes: {exclude: ["password", "updatedAt"]}, as: "driver"}]
     })
 }
 

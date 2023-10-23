@@ -37,6 +37,9 @@ Event.hasMany(EventDrive)
 User.belongsToMany(EventDrive, {through: DriveMember})
 EventDrive.belongsToMany(User, {through: DriveMember})
 
+User.hasMany(EventDrive, {foreignKey: "driverId", as: 'driver'})
+EventDrive.belongsTo(User, {foreignKey: "driverId", as: 'driver'})
+
 Event.hasMany(DriveMember)
 DriveMember.belongsTo(Event)
 

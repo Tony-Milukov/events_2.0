@@ -1,4 +1,3 @@
-
 ### Event API
 
 The Event API provides endpoints for managing events, including creating, retrieving, updating, and deleting events. It also supports user requests to join events.
@@ -29,6 +28,7 @@ PUT /api/event/create
     "eventId": "<Event ID>"
   }
   ```
+
 #### Update Event
 
 ```http
@@ -43,7 +43,7 @@ PUT /api/event/update
 | `endLocation`  | `string` | **one of this Required**. Location where the event ends.                            |
 | `startLocation`| `string` | **one of this Required** Location where the event starts (optional).                |
 | `links`        | `array`  | **one of this Required** Array of JSON objects representing event links (optional). |
- 
+
 **Response:**
 
 - Status Code: 200 OK
@@ -173,24 +173,6 @@ PUT /api/event/acceptRequest
 
 #### Join Event Request
 
-```http
-PUT /api/event/joinRequest
-```
-
-| Parameter   | Type       | Description                   |
-| :---------- | :--------- | :---------------------------- |
-| `eventId` | `number` | **Required**. The ID of the event to join. |
-
-**Response:**
-
-- Status Code: 200 OK
-- Body: JSON object with a success message.
-  ```json
-  {
-    "message": "You successfully requested adding you to the Event!"
-  }
-  ```
-
 #### Get Join Requests
 
 ```http
@@ -204,28 +186,40 @@ POST /api/event/getJoinRequests
 **Response:**
 
 - Status Code: 200 OK
-  - Body: JSON object containing an array of join requests.
-    ```json
-    {
+- Body: JSON object containing an array of join requests.
+  ```json
+  {
     "requests": [
         {
             "id": <int>,
-            "status": <bolean>,
+            "status": <boolean>,
             "createdAt": <string -> date>,
             "updatedAt": <string -> date>,
             "userId": 3,
             "eventId": <int>,
             "creatorId": <int>,
             "event": {
-                "title": <string>
+                "id": <eventId>,
+                "title": <eventTitle>,
+                "price": <eventPrice>,
+                "startLocation": <startLoc>,
+                "endLocation": <envLoc>,
+                "links": "httpLink[]",
+                "image": <imgageName>,
+                "createdAt": <createdAt>,
             },
-            "user": {
-                "username": <string>,
-                "email": <email>
+            "user": { // user that requests a join
+                "id": <userId>,
+                "email": <userEmail>,
+                "username": <username>,
+                "verified": <verified <boolean>>,
+                "image": <imageName>,
+                "description": <description>,
             }
         }
-    }
-    ```
+    ]
+  }
+  ```
 
 #### Get User Events
 
@@ -305,7 +299,7 @@ POST /api/event/getJoined
 
 #### Get Event Members
 
-  ```http
+```http
 POST /api/event/getMembers
 ```
 
@@ -321,21 +315,19 @@ POST /api/event/getMembers
   {
     "eventMembers": [
       {
-            "id": <userId>,
-            "email": <userEmail>,
-            "username": <username>",
-            "verified": <isUserVeriefied <boolean>>,
-            "image": <profilePic>,
-            "description": <userDescription>,
-            "createdAt": <userCreationDate>
-        },
+        "id": "<User ID>",
+        "username": "<Username>",
+        "email": "<Email>",
+        "roles": [ "<Role 1>", "<Role 2>", ... ]
+      },
       // Additional User Objects
     ]
   }
   ```
+
 #### Search Event by title
 
-  ```http
+```http
 POST /api/event/search/:value
 ```
 
@@ -344,6 +336,7 @@ POST /api/event/search/:value
 | `value`    | `string` | **Required**. The searching param                      |
 | `pageSize` | `number` | **Required**. How many items have to be required       |
 | `page`     | `number` | **Required**. Items for which page have to be rendered |
+
 **Response:**
 
 - Status Code: 200 OK
@@ -369,11 +362,11 @@ POST /api/event/search/:value
         ]
     }
   }
-
+  ```
 
 #### Create new Drive as Driver
 
-  ```http
+```http
 PUT /api/event/drive/
 ```
 
@@ -385,6 +378,7 @@ PUT /api/event/drive/
 | `description`     | `string` | **Required** some text, description |
 
 **Response:**
+
 - Status Code: 200 OK
 - Body: JSON object containing an object of new drive.
   ```json
@@ -400,11 +394,11 @@ PUT /api/event/drive/
         "createdAt": "2023-10-16T10:17:51.079Z"
     }
   }
-  
-  
+  ```
+
 #### Delete Drive as Driver
 
-  ```http
+```http
 POST /api/event/drive/delete
 ```
 | Parameter  | Type     | Description                                      |
@@ -412,16 +406,17 @@ POST /api/event/drive/delete
 | `eventId`    | `number` | **Required one of params**. The eventId          |
 | `driveId`     | `number` | **Required Required one of params** the drive Id |
 
-
 **Response:**
+
 - Status Code: 200 OK
-  - Body: JSON object containing an message
+  - Body: JSON object containing a success message
     ```json
     {
     "message": 
         "Successfully deleted a drive possibility for you, you are not offending drive possibilities anymore"
     }
-    
+    ```
+
 #### Join Drive as Member
 ###### only if you are the event member!
   ```http
@@ -434,14 +429,14 @@ PUT /api/event/drive/join
 
 
 **Response:**
+
 - Status Code: 200 OK
-  - Body: JSON object containing an message
+  - Body: JSON object containing a success message
     ```json
     {
     "message": 
         "Successfully joined the drive"
     }
-
 
 #### Leave the Drive as Member
 ###### only if you are the event member!
@@ -456,14 +451,15 @@ PUT /api/event/drive/leave
 
 
 **Response:**
+
 - Status Code: 200 OK
-  - Body: JSON object containing an message
+  - Body: JSON object containing a success message
     ```json
     {
     "message": 
         "Successfully leaved the drive"
     }
-    
+
 #### Get All drives for an event
 ###### only if you are the event member!
 
@@ -477,8 +473,9 @@ POST /api/event/drive
 
 
 **Response:**
+
 - Status Code: 200 OK
-  - Body: JSON object containing an message
+  - Body: JSON object containing a list of drives
     ```json
     {
      "drives": [
@@ -490,7 +487,16 @@ POST /api/event/drive
             "availableSeats":  <avaliable seats>,
             "createdAt":  <createdAt>,
             "updatedAt":  <updatedAt>,
-            "eventId": <eventId>
+            "eventId": <eventId>,
+           "driver": {
+                      "id": <userID>,
+                      "email": <userEmail>,
+                      "username": <username>,
+                      "verified": <isVerifies <boolead>>,
+                      "image": <imageName>,
+                      "description": <description>,
+                      "createdAt": <creationDate>
+                  }
         }
     ]
 }

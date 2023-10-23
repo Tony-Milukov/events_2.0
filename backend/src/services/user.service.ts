@@ -38,7 +38,8 @@ const registerService = async (email: string, password: string) => {
     const newUser = await User.create({
         email,
         password: hash,
-        username: `user${v4()}`
+        username: `user${v4()}`,
+        description: null
     })
 
     //if user is not, he is not created, throw error

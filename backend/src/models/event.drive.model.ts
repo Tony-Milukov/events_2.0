@@ -13,6 +13,7 @@ module.exports = Sequelize.define("eventDrive", {
         allowNull: false,
         type: DataTypes.INTEGER,
         primaryKey: true
+
     },
     description: {
         allowNull: true,
