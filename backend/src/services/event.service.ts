@@ -340,6 +340,9 @@ const leaveDriveService = async (driveId: number | undefined, user: UserInterfac
         })
         if (eventMember) {
             await eventDrive.removeUser(user)
+            await eventDrive.update({
+                availableSeats: eventDrive.availableSeats + 1
+            })
         } else {
             throw {errorMsg: `You have not joined the drive with id: ${driveId}`}
         }
