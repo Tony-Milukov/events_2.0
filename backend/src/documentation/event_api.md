@@ -321,11 +321,14 @@ POST /api/event/getMembers
   {
     "eventMembers": [
       {
-        "id": "<User ID>",
-        "username": "<Username>",
-        "email": "<Email>",
-        "roles": [ "<Role 1>", "<Role 2>", ... ]
-      },
+            "id": <userId>,
+            "email": <userEmail>,
+            "username": <username>",
+            "verified": <isUserVeriefied <boolean>>,
+            "image": <profilePic>,
+            "description": <userDescription>,
+            "createdAt": <userCreationDate>
+        },
       // Additional User Objects
     ]
   }
