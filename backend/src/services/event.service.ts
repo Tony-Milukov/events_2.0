@@ -320,6 +320,10 @@ const joinDriveService = async (driveId: number | undefined, user: any): Promise
             await driveMember[0].update({
                 eventId: eventDrive.eventId
             })
+
+            await eventDrive.update({
+                availableSeats: eventDrive.availableSeats - 1
+            })
             return driveMember
         }
     }
