@@ -478,6 +478,12 @@ POST /api/event/drive
   - Body: JSON object containing a list of drives
     ```json
     {
+    "joinedDrive": {
+        "eventDriveId": <driveId>,
+        "eventId": <eventId>,
+        "userId": <userId (currentUser)>,
+
+    },
      "drives": [
         {
             "id": <driveId>,

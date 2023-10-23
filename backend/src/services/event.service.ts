@@ -359,11 +359,6 @@ const getDrivesService = async (eventId: number, user: UserInterface) => {
             userId: user.id
         }
     })
-    console.log(joinedDrive)
-    console.log({
-        eventId,
-        userId: user.id
-    })
 
     return {
         joinedDrive,
