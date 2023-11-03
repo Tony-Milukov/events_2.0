@@ -343,7 +343,6 @@ POST /api/event/search/:value
 - Body: JSON object containing an array of events.
   ```json
   {
-    "events": {
         "count": 1,
         "rows": [
             {
@@ -360,7 +359,6 @@ POST /api/event/search/:value
                 "userId": "<User>.id"
             }
         ]
-    }
   }
   ```
 

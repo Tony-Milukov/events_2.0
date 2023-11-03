@@ -201,7 +201,7 @@ const searchEventsByValueController = async (req: any, res: any) => {
         const offset = pageSize * (page === 1 ? 0 : page - 1);
         const value = paramValidator(req, res, "value")
         const events = await searchEventsByValueService(page, offset, value)
-        res.json({events}).status(200)
+        res.json(events).status(200)
     } catch (e: any) {
         apiError(res, e.errorMsg, e.status)
     }
