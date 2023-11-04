@@ -201,7 +201,13 @@ const searchEventsByValueController = async (req: any, res: any) => {
         const offset = pageSize * (page === 1 ? 0 : page - 1);
         const value = paramValidator(req, res, "value");
         const events = value.trim().length === 0 ? await getAllEventsService(pageSize, offset) : await searchEventsByValueService(pageSize, offset, value)
-        res.json(events).status(200)
+
+        //ony for hackaton untill 21.01.2023
+         res.json({events}).status(200)
+
+        //normal
+        // res.json(events).status(200)
+
     } catch (e: any) {
         apiError(res, e.errorMsg, e.status)
     }
