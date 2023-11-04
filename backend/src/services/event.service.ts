@@ -1,6 +1,7 @@
 import {EventInterface} from "../interfaces/event.interface";
 import {UserInterface} from "../interfaces/user.interface";
 import {RoleInterface} from "../interfaces/role.interface";
+
 const { Op } = require("sequelize");
 
 const sharp = require('sharp');
@@ -213,17 +214,15 @@ const updateEventService = async (eventId: number, title: string | undefined, pr
     })
 }
 const searchEventsByValueService = async (limit: number, offset: number, value: string) => {
-    const events = await Event.findAndCountAll({
-         limit: limit,
-         offset: offset,
+    return await Event.findAndCountAll({
+        limit: limit,
+        offset: offset,
         where: {
-             title: {
-                 [Op.like]: `%${value.toLowerCase()}%`
-             }
+            title: {
+                [Op.iLike]: `%${value.toLowerCase()}%`
+            }
         }
     })
-
-    return events
 }
 const isUserMemberOfEvent = async (eventId: number, userId: number) => {
     const isUserMemberOfEvent = await EventMember.findOne({
