@@ -123,7 +123,7 @@ PUT /api/user/pic
 
 | Parameter | Type   | Description   |
 |:----------|:-------|:--------------|
-| `img`     | `file` | **Required**. |
+| `image`   | `file` | **Required**. |
 
 **Response:**
 
