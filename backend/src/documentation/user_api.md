@@ -131,6 +131,7 @@ PUT /api/user/pic
 - Body: JSON object containing upload confirmation.
   ```json
   {
-    "message": "You successfully updated user information"
+    "message": "You successfully updated user information",
+    "img": "img name"
   }
   ```

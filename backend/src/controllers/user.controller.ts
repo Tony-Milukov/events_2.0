@@ -1,5 +1,6 @@
 import {UserInterface} from "../interfaces/user.interface";
 import {RatingInterface} from "../interfaces/rating.interface";
+import {Model, Sequelize} from "sequelize";
 
 const apiError = require("../utilits/apiError.ts")
 const {bodyValidator, paramValidator} = require("../utilits/validators/request.validator.ts")
@@ -119,11 +120,12 @@ const updateUserProfilePicController = async (req: any, res: any) => {
         const image = req.files.image.data
 
         if (image) {
-            await updateUserProfilePicService(user, image)
+            const updatedUser: UserInterface = await updateUserProfilePicService(user, image)
+            res.json({message: "You successfully updated user information", img: updatedUser.image}).status(200)
         } else {
             return res.json({message: "You have to send an image!"}).status(400)
         }
-        res.json({message: "You successfully updated user information"}).status(200)
+
     } catch (e: any) {
         console.log(e)
         apiError(res, e.errorMsg, e.status)

@@ -163,7 +163,7 @@ const updateUserProfilePicService = async (user: typeof User, image: Buffer) => 
         .webp({quality: 80})
         .toFile(`src/public/users/${user.dataValues.id}.webp`)
 
-    await user.update({
+    return await user.update({
         image: `${user.dataValues.id}.webp`
     })
 }
